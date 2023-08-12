@@ -23,7 +23,6 @@ type Task = {
   repeat_data?: TaskRepeatData;
   created_at: Date;
   due_at?: Date;
-  theme: string;
   tags: string[];
 };
 

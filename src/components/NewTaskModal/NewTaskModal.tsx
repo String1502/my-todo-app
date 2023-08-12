@@ -1,5 +1,6 @@
 import { COLLECTION_NAME } from "@/lib/enums/collectionName";
 import { db } from "@/lib/firebase";
+import { useThemes } from "@/lib/hooks/useThemes";
 import { accountConverter } from "@/lib/models/account";
 import { Task, TaskRepeatData, TaskRepeatDataType } from "@/lib/models/task";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,7 @@ const defaultTask: Task = {
 const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose }) => {
 
   const [newTask, setNewTask] = useState<Task>(defaultTask)
+  const [themes] = useThemes();
 
   console.log(newTask);
 
@@ -203,6 +205,14 @@ const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose }) => {
           { /* Divider */}
           <div className="py-2">
             <div className="h-0.5 w-full bg-black/50"></div>
+          </div>
+
+          {/* Theme option */}
+          <div className="flex-col space-y-1">
+            <label htmlFor='themeSelect' className="font-bold text-sm">Theme</label>
+            <select id='themeSelect' onChange={() => { }} name="theme" className={cn('block outline-none outline-2 rounded-lg px-2 outline-black py-1  focus:outline-blue-500 w-full')}>
+              {themes && themes.length > 0 && themes.map(theme => <option value={theme.id}>{theme.name}</option>)}
+            </select>
           </div>
 
         </div>

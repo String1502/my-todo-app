@@ -1,9 +1,10 @@
 import { FirestoreDataConverter } from "firebase/firestore";
+import { Theme } from "./theme";
 
 type Account = {
   id: string;
   themes: string[];
-  inbox_theme: string;
+  inbox_theme: Theme;
 };
 
 const accountConverter: FirestoreDataConverter<Account> = {
