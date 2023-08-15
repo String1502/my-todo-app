@@ -1,10 +1,10 @@
-import { FirestoreDataConverter, Timestamp } from "firebase/firestore";
+import { FirestoreDataConverter, Timestamp } from 'firebase/firestore';
 
-type TaskPriority = "low" | "normal" | "high" | "critical";
+type TaskPriority = 'low' | 'normal' | 'high' | 'critical';
 
-type TaskState = "undone" | "done" | "never";
+type TaskState = 'undone' | 'done' | 'never';
 
-type TaskRepeatDataType = "day" | "week" | "month" | "year" | "custom";
+type TaskRepeatDataType = 'day' | 'week' | 'month' | 'year' | 'custom';
 
 type TaskRepeatData = {
   type: TaskRepeatDataType;
@@ -24,6 +24,7 @@ type Task = {
   created_at: Date;
   due_at?: Date;
   tags: string[];
+  theme: string;
 };
 
 const taskConverter: FirestoreDataConverter<Task> = {
@@ -33,11 +34,25 @@ const taskConverter: FirestoreDataConverter<Task> = {
     const task: Task = {
       id: snapshot.id,
       ...data,
-      created_at: data.created_at.toDate(),
     } as Task;
 
     if (task.due_at && task.due_at instanceof Timestamp) {
       task.due_at = task.due_at.toDate();
+    }
+
+    if (task.created_at instanceof Timestamp) {
+      task.created_at = task.created_at.toDate();
+    }
+
+    if (task.repeat_data) {
+      if (task.repeat_data.type === 'custom') {
+        if (task.repeat_data.from instanceof Timestamp) {
+          task.repeat_data.from = task.repeat_data.from.toDate();
+        }
+        if (task.repeat_data.to instanceof Timestamp) {
+          task.repeat_data.to = task.repeat_data.to.toDate();
+        }
+      }
     }
 
     return task;

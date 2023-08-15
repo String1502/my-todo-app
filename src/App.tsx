@@ -1,7 +1,7 @@
 import NewTaskModal from '@/components/NewTaskModal';
 import { auth } from '@/lib/firebase';
-import { AccountContext } from '@/lib/hooks/useAccount';
-import { useEffect, useState } from 'react';
+import { AccountContext } from '@/lib/hooks/useAccountContext';
+import { useState } from 'react';
 import {
   useAuthState,
   useSignInWithGoogle,
@@ -9,50 +9,19 @@ import {
 } from 'react-firebase-hooks/auth';
 import Navbar from './components/Navbar';
 import ThemesDisplayer from './components/ThemesDisplayer';
-import { getAccount } from './lib/firestore';
-import { Account } from './lib/models/account';
+import useAccount from './lib/hooks/useAccount';
 
 const App = () => {
   //#region States
 
   const [user, userLoading, userError] = useAuthState(auth);
-  const [account, setAccount] = useState<Account | null>(null);
+  const [account, accountLoading, accountError] = useAccount(user?.uid);
 
   const [newTaskModalOpen, setNewTaskModalOpen] = useState<boolean>(false);
 
   const [signInWithGoogle, signInUser, signInLoading, signInError] =
     useSignInWithGoogle(auth);
   const [signOut, signOutLoading, signOutError] = useSignOut(auth);
-
-  //#endregion
-
-  //#region UseEffects
-
-  useEffect(() => {
-    const getData = async () => {
-      // Account part
-      if (!user) return;
-
-      let account: Account;
-
-      try {
-        account = await getAccount(user.uid);
-      } catch (error) {
-        console.log(error);
-        setAccount(null);
-        return;
-      }
-
-      if (!account) {
-        setAccount(null);
-        return;
-      }
-
-      setAccount(account);
-    };
-
-    getData();
-  }, [user]);
 
   //#endregion
 

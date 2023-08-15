@@ -1,6 +1,6 @@
 import { COLLECTION_NAME } from '@/lib/enums/collectionName';
 import { db } from '@/lib/firebase';
-import useAccount from '@/lib/hooks/useAccount';
+import useAccountContext from '@/lib/hooks/useAccountContext';
 import { Tag, tagConverter } from '@/lib/models/tag';
 import { Task } from '@/lib/models/task';
 import { doc, getDoc } from 'firebase/firestore';
@@ -16,7 +16,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onClick }) => {
 
   const [tags, setTags] = useState<Tag[]>([]);
 
-  const account = useAccount();
+  const account = useAccountContext();
 
   //#endregion
 

@@ -1,7 +1,7 @@
 import { INBOX_THEME_NAME } from '@/lib/constants';
 import { COLLECTION_NAME } from '@/lib/enums/collectionName';
 import { db } from '@/lib/firebase';
-import useAccount from '@/lib/hooks/useAccount';
+import useAccountContext from '@/lib/hooks/useAccountContext';
 import {
   Task,
   TaskRepeatData,
@@ -32,16 +32,20 @@ const defaultTask: Task = {
   repeat: false,
   created_at: new Date(),
   tags: [],
+  theme: 'inbox',
 };
 
 const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose, open }) => {
   //#region States
 
   const [newTask, setNewTask] = useState<Task>(defaultTask);
-  const [selectedTheme, setSelectedTheme] = useState<string>('');
   const [themes, setThemes] = useState<Theme[]>([]);
 
-  const account = useAccount();
+  const account = useAccountContext();
+
+  const [isAddTheme, setIsAddTheme] = useState<boolean>(false);
+
+  const [newThemeName, setNewThemeName] = useState<string>('');
 
   //#endregion
 
@@ -133,10 +137,10 @@ const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose, open }) => {
 
     let path = '';
 
-    if (selectedTheme) {
-      path = `${COLLECTION_NAME.ACCOUNTS}/${account?.id}/${COLLECTION_NAME.THEMES}/${selectedTheme}/${COLLECTION_NAME.TASKS}`;
-    } else {
+    if (newTask.theme === 'inbox') {
       path = `${COLLECTION_NAME.ACCOUNTS}/${account?.id}/${INBOX_THEME_NAME}`;
+    } else {
+      path = `${COLLECTION_NAME.ACCOUNTS}/${account?.id}/${COLLECTION_NAME.THEMES}/${newTask.theme}/${COLLECTION_NAME.TASKS}`;
     }
 
     await addDoc(collection(db, path).withConverter(taskConverter), toAddTask);
@@ -144,8 +148,29 @@ const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose, open }) => {
     handleClose();
   };
 
-  const handleSelectedThemeChange = (themeId: string) => {
-    setSelectedTheme(themeId);
+  const handleToggleAddTheme = () => {
+    setIsAddTheme((prev) => !prev);
+  };
+
+  const handleThemeNameChange = (value: string) => {
+    setNewThemeName(value);
+  };
+
+  const handleAddTheme = () => {
+    if (!newThemeName) {
+      alert('Please enter theme name');
+      return;
+    }
+
+    const path = `${COLLECTION_NAME.ACCOUNTS}/${account?.id}/${COLLECTION_NAME.THEMES}`;
+    const collectionRef = collection(db, path);
+
+    const data: Omit<Theme, 'id'> = {
+      name: newThemeName,
+      tasks: [],
+    };
+
+    addDoc(collectionRef, data);
   };
 
   //#endregion
@@ -379,25 +404,116 @@ const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose, open }) => {
           <label htmlFor="themeSelect" className="font-bold text-sm">
             Theme
           </label>
-          <select
-            id="themeSelect"
-            value={selectedTheme}
-            onChange={(e) => handleSelectedThemeChange(e.target.value)}
-            name="theme"
-            className={cn(
-              'block outline-none outline-2 rounded-lg px-2 outline-black py-1  focus:outline-blue-500 w-full'
-            )}
-          >
-            <option value={''} defaultChecked>
-              Không
-            </option>
 
-            {themes &&
-              themes.length > 0 &&
-              themes.map((theme) => (
-                <option value={theme.id}>{theme.name}</option>
-              ))}
-          </select>
+          {/* Options */}
+          <div className="flex items-center justify-between space-x-2">
+            <select
+              id="themeSelect"
+              value={newTask.theme}
+              onChange={(e) => handleNewTaskChange('theme', e.target.value)}
+              name="theme"
+              className={cn(
+                'block outline-none outline-2 rounded-lg px-2 outline-black py-1  focus:outline-blue-500 w-full'
+              )}
+            >
+              <option key={'none'} value={'inbox'} defaultChecked>
+                Inbox
+              </option>
+
+              {themes &&
+                themes.length > 0 &&
+                themes.map((theme) => (
+                  <option key={theme.id} value={theme.id}>
+                    {theme.name}
+                  </option>
+                ))}
+            </select>
+
+            <button
+              className={cn(
+                ' border-2 border-black rounded-lg transition-colors p-1',
+                {
+                  'bg-green-500 hover:bg-green-700 active:bg-green-500':
+                    !isAddTheme,
+                  'bg-yellow-500 hover:bg-yellow-700 active:bg-yellow-500':
+                    isAddTheme,
+                }
+              )}
+              onClick={handleToggleAddTheme}
+            >
+              {isAddTheme ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
+
+          {isAddTheme && (
+            <div className="flex-col space-y-1">
+              <label htmlFor="newThemeName" className="font-bold text-sm">
+                Theme name
+              </label>
+              <div className="flex items-center justify-between space-x-2">
+                <TextField
+                  id="newThemeName"
+                  type="text"
+                  value={newThemeName}
+                  onChange={(e) => handleThemeNameChange(e.target.value)}
+                  placeholder="Theme name"
+                  className="w-full"
+                />
+
+                <button
+                  className={cn(
+                    ' border-2 border-black rounded-lg transition-colors p-1 bg-green-500 hover:bg-green-700 active:bg-green-500'
+                  )}
+                  onClick={handleAddTheme}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 4.5v15m7.5-7.5h-15"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </Modal>

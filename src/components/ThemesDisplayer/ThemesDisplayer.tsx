@@ -1,14 +1,11 @@
 import AddTaskButon from '@/components/AddTaskButton/AddTaskButton';
 import IntervalButtonBar from '@/components/IntervalButtonBar';
-import { INBOX_THEME_NAME } from '@/lib/constants';
-import { COLLECTION_NAME } from '@/lib/enums/collectionName';
-import { auth, db } from '@/lib/firebase';
-import useAccount from '@/lib/hooks/useAccount';
-import { Task, taskConverter } from '@/lib/models/task';
-import { Theme, themeConverter } from '@/lib/models/theme';
+import { auth } from '@/lib/firebase';
+import useAccountContext from '@/lib/hooks/useAccountContext';
+import useThemes from '@/lib/hooks/useThemes';
+import { Task } from '@/lib/models/task';
 import IntervalState from '@/lib/types/IntervalState';
-import { collection, getDocs } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import ThemeAccordion from '../ThemeAccordion';
 import ViewTaskModal from '../ViewTaskModal';
@@ -18,89 +15,25 @@ type ThemesDisplayerProps = {
 };
 
 const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
+  //#region States
+
   const [user, userLoading, userError] = useAuthState(auth);
   const [selectedIntervalState, setSelectedIntervalState] =
     useState<IntervalState>('inbox');
-  const [themes, setThemes] = useState<Theme[]>([]);
-  const [inboxTheme, setInboxTheme] = useState<Task[]>([]);
+
+  const account = useAccountContext();
+
+  // const [themes, setThemes] = useState<Theme[]>([]);
+  const [themes, themesLoading, themesError] = useThemes(account?.id);
 
   const [viewTaskModalOpen, setViewTaskModalOpen] = useState<boolean>(false);
 
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [selectedTaskTheme, setSelectedThemeTask] = useState<string>('');
 
-  const account = useAccount();
+  //#endregion
 
   //#region UseEffects
-
-  useEffect(() => {
-    const getData = async () => {
-      if (!account) return;
-
-      try {
-        const inboxTasks = await getDocs(
-          collection(
-            db,
-            `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${INBOX_THEME_NAME}`
-          ).withConverter(taskConverter)
-        );
-
-        const tasks: Task[] = [];
-
-        inboxTasks.forEach((task) => {
-          if (task.exists()) {
-            tasks.push(task.data());
-          }
-        });
-
-        setInboxTheme(tasks);
-      } catch (error) {
-        console.log(error);
-      }
-
-      // Theme part
-      try {
-        const themePath = `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${COLLECTION_NAME.THEMES}`;
-
-        const themeSnapshot = await getDocs(
-          collection(db, themePath).withConverter(themeConverter)
-        );
-
-        const themes: Theme[] = [];
-
-        for (const theme of themeSnapshot.docs) {
-          if (theme.exists()) {
-            const data = theme.data();
-
-            const taskPath = `${COLLECTION_NAME.ACCOUNTS}/${account!.id}/${
-              COLLECTION_NAME.THEMES
-            }/${theme.id}/${COLLECTION_NAME.TASKS}`;
-            const tasksSnapshot = await getDocs(
-              collection(db, taskPath).withConverter(taskConverter)
-            );
-
-            const tasks: Task[] = [];
-
-            tasksSnapshot.forEach((task) => {
-              if (task.exists()) {
-                tasks.push(task.data());
-              }
-            });
-
-            data.tasks = tasks;
-
-            themes.push(data);
-          }
-        }
-
-        setThemes(themes);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    getData();
-  }, [account]);
 
   //#endregion
 
@@ -117,6 +50,13 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
     setSelectedTask(task);
     setSelectedThemeTask(theme);
   };
+
+  const handleViewTaskModalClose = () => {
+    setViewTaskModalOpen(false);
+    setSelectedTask(null);
+    setSelectedThemeTask('');
+  };
+
   //#endregion
 
   if (userLoading)
@@ -162,13 +102,10 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
                   </li>
                 ))
               : null}
-            {inboxTheme?.length > 0 ? (
-              <li key={'inbox'}>
-                <ThemeAccordion
-                  theme={{ id: '', name: 'Inbox', tasks: inboxTheme }}
-                />
-              </li>
-            ) : null}
+
+            <li key={'inbox'}>
+              <ThemeAccordion onTaskClick={handleTaskClick} inbox />
+            </li>
           </ul>
         </>
       ) : (
@@ -182,7 +119,7 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
       {selectedTask && (
         <ViewTaskModal
           open={viewTaskModalOpen}
-          handleClose={() => setViewTaskModalOpen(false)}
+          handleClose={handleViewTaskModalClose}
           task={selectedTask}
           theme={selectedTaskTheme}
         />

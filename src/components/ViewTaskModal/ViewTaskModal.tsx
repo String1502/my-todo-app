@@ -1,14 +1,21 @@
 import Modal from '@/components/Modal';
 import TextArea from '@/components/TextArea/TextArea';
 import TextField from '@/components/TextField';
+import { INBOX_THEME_NAME } from '@/lib/constants';
 import { COLLECTION_NAME } from '@/lib/enums/collectionName';
 import { db } from '@/lib/firebase';
-import useAccount from '@/lib/hooks/useAccount';
+import useAccountContext from '@/lib/hooks/useAccountContext';
 import { Task, TaskRepeatData, TaskRepeatDataType } from '@/lib/models/task';
 import { Theme, themeConverter } from '@/lib/models/theme';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
-import { collection, getDocs } from 'firebase/firestore';
+import {
+  DocumentReference,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+} from 'firebase/firestore';
 import { ComponentProps, FC, useEffect, useState } from 'react';
 import FormLabel from '../FormLabel';
 
@@ -25,15 +32,13 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
   actions,
   handleClose,
   task: paramTask,
-  theme,
 }) => {
   //#region States
 
   const [task, setTask] = useState<Task>(paramTask);
-  const [selectedTheme, setSelectedTheme] = useState<string>(theme);
   const [themes, setThemes] = useState<Theme[]>([]);
 
-  const account = useAccount();
+  const account = useAccountContext();
 
   //#endregion
 
@@ -114,8 +119,33 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
     setTask({ ...task, repeat_data: repeat_data });
   };
 
-  const handleSelectedThemeChange = (themeId: string) => {
-    setSelectedTheme(themeId);
+  const handleDeleteTask = async () => {
+    if (!account) {
+      alert('No account found.');
+      return;
+    }
+
+    let docRef: DocumentReference;
+
+    if (task.theme === 'inbox') {
+      docRef = doc(
+        db,
+        `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${INBOX_THEME_NAME}/${task.id}`
+      );
+    } else {
+      docRef = doc(
+        db,
+        `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${COLLECTION_NAME.THEMES}/${task.theme}/${COLLECTION_NAME.TASKS}/${task.id}`
+      );
+    }
+
+    try {
+      await deleteDoc(docRef);
+    } catch (error) {
+      console.log(error);
+    }
+
+    handleClose && handleClose();
   };
 
   //#endregion
@@ -199,6 +229,7 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
                   </label>
                   <select
                     id="repeatType"
+                    value={task.repeat_data?.type}
                     onChange={(e) =>
                       handleRepeatTypeChange(
                         e.target.value as TaskRepeatDataType
@@ -223,7 +254,7 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
                     <>
                       <div className="flex-col space-y-1">
                         <label htmlFor="interval" className="font-bold text-sm">
-                          Type
+                          Interval
                         </label>
                         <input
                           id="interval"
@@ -331,15 +362,15 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
             </label>
             <select
               id="themeSelect"
-              value={selectedTheme}
-              onChange={(e) => handleSelectedThemeChange(e.target.value)}
+              value={task.theme}
+              onChange={(e) => handleTaskChange('theme', e.target.value)}
               name="theme"
               className={cn(
                 'block outline-none outline-2 rounded-lg px-2 outline-black py-1  focus:outline-blue-500 w-full'
               )}
             >
-              <option key="none" value={''} defaultChecked>
-                None
+              <option key="none" value={'inbox'} defaultChecked>
+                Inbox
               </option>
 
               {themes &&
@@ -351,6 +382,32 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
                 ))}
             </select>
           </div>
+
+          {/* Delete Button */}
+          <button
+            className="bg-red-500 hover:bg-red-600 active:bg-red-500
+            border-2 border-black p-1 rounded-lg text-white font-bold w-full
+            flex justify-center items-center gap-1"
+            onClick={handleDeleteTask}
+          >
+            <span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                />
+              </svg>
+            </span>
+            <span>Delete</span>
+          </button>
         </div>
       )}
     </Modal>
