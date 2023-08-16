@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@uidotdev/usehooks": "^2.0.1",
+    "@uidotdev/usehooks": "^2.1.0",
     "clsx": "^2.0.0",
     "dayjs": "^1.11.9",
     "firebase": "^10.1.0",

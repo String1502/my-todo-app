@@ -2,6 +2,7 @@ import { INBOX_THEME_NAME } from '@/lib/constants';
 import { COLLECTION_NAME } from '@/lib/enums/collectionName';
 import { db } from '@/lib/firebase';
 import useAccountContext from '@/lib/hooks/useAccountContext';
+import { Tag } from '@/lib/models/tag';
 import {
   Task,
   TaskRepeatData,
@@ -15,7 +16,7 @@ import { addDoc, collection, getDocs } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import FormLabel from '../FormLabel';
 import Modal from '../Modal';
-import TextArea from '../TextArea/TextArea';
+import TextArea from '../TextArea';
 import TextField from '../TextField';
 
 interface NewTaskModalProps {
@@ -171,6 +172,28 @@ const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose, open }) => {
     };
 
     addDoc(collectionRef, data);
+  };
+
+  const handleAddTag = async (tag: string) => {
+    if (!account) return;
+
+    const query = `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${COLLECTION_NAME.TAGS}`;
+    const collectionRef = collection(db, query);
+
+    const tagData: Omit<Tag, 'id'> = {
+      name: tag,
+    };
+
+    try {
+      const docRef = await addDoc(collectionRef, tagData);
+
+      setNewTask((prev) => ({
+        ...prev,
+        tags: [...prev.tags, docRef.id],
+      }));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   //#endregion
