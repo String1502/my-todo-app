@@ -59,8 +59,11 @@ const taskConverter: FirestoreDataConverter<Task> = {
   },
 
   toFirestore: (task: Task) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, ...data } = task;
+
     return {
-      ...task,
+      ...data,
     };
   },
 };

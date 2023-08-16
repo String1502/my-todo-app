@@ -174,28 +174,6 @@ const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose, open }) => {
     addDoc(collectionRef, data);
   };
 
-  const handleAddTag = async (tag: string) => {
-    if (!account) return;
-
-    const query = `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${COLLECTION_NAME.TAGS}`;
-    const collectionRef = collection(db, query);
-
-    const tagData: Omit<Tag, 'id'> = {
-      name: tag,
-    };
-
-    try {
-      const docRef = await addDoc(collectionRef, tagData);
-
-      setNewTask((prev) => ({
-        ...prev,
-        tags: [...prev.tags, docRef.id],
-      }));
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   //#endregion
 
   return (

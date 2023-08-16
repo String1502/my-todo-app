@@ -1,5 +1,5 @@
-import { FirestoreDataConverter } from "firebase/firestore";
-import { Theme } from "./theme";
+import { FirestoreDataConverter } from 'firebase/firestore';
+import { Theme } from './theme';
 
 type Account = {
   id: string;
@@ -16,8 +16,11 @@ const accountConverter: FirestoreDataConverter<Account> = {
     } as Account;
   },
   toFirestore: (account: Account) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, ...data } = account;
+
     return {
-      ...account,
+      ...data,
     };
   },
 };

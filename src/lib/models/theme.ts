@@ -1,5 +1,5 @@
-import { FirestoreDataConverter } from "firebase/firestore";
-import { Task } from "./task";
+import { FirestoreDataConverter } from 'firebase/firestore';
+import { Task } from './task';
 
 type Theme = {
   id: string;
@@ -16,8 +16,11 @@ const themeConverter: FirestoreDataConverter<Theme> = {
     } as Theme;
   },
   toFirestore: (theme: Theme) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, ...data } = theme;
+
     return {
-      ...theme,
+      ...data,
     };
   },
 };

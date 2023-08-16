@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import {
   DocumentReference,
+  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -24,6 +25,7 @@ type ViewTaskModal = Omit<
   'title' | 'children'
 > & {
   task: Task;
+  setTask: React.Dispatch<React.SetStateAction<Task | null>>;
   theme: string;
 };
 
@@ -31,14 +33,18 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
   open,
   actions,
   handleClose,
-  task: paramTask,
+  task,
+  setTask,
 }) => {
   //#region States
 
-  const [task, setTask] = useState<Task>(paramTask);
   const [themes, setThemes] = useState<Theme[]>([]);
 
   const account = useAccountContext();
+
+  const [isAddTheme, setIsAddTheme] = useState<boolean>(false);
+
+  const [newThemeName, setNewThemeName] = useState<string>('');
 
   //#endregion
 
@@ -72,7 +78,9 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
   //#region Handlers
 
   const handleTaskChange = (name: keyof Task, value: Task[keyof Task]) => {
-    setTask((prev) => ({ ...prev, [name]: value }));
+    setTask((prev) => {
+      return prev ? { ...prev, [name]: value } : null;
+    });
   };
 
   const handleRepeatChange = (repeat: boolean) => {
@@ -82,13 +90,19 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
         interval: 1,
       };
 
-      setTask((prev) => ({
-        ...prev,
-        repeat_data: repeatData,
-        repeat: true,
-      }));
+      setTask((prev) => {
+        return prev
+          ? {
+              ...prev,
+              repeat_data: repeatData,
+              repeat: true,
+            }
+          : null;
+      });
     } else {
       setTask((prev) => {
+        if (!prev) return null;
+
         const cloned = { ...prev, repeat: false };
         delete cloned.repeat_data;
         return cloned;
@@ -146,6 +160,31 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
     }
 
     handleClose && handleClose();
+  };
+
+  const handleToggleAddTheme = () => {
+    setIsAddTheme((prev) => !prev);
+  };
+
+  const handleAddTheme = () => {
+    if (!newThemeName) {
+      alert('Please enter theme name');
+      return;
+    }
+
+    const path = `${COLLECTION_NAME.ACCOUNTS}/${account?.id}/${COLLECTION_NAME.THEMES}`;
+    const collectionRef = collection(db, path);
+
+    const data: Omit<Theme, 'id'> = {
+      name: newThemeName,
+      tasks: [],
+    };
+
+    addDoc(collectionRef, data);
+  };
+
+  const handleThemeNameChange = (value: string) => {
+    setNewThemeName(value);
   };
 
   //#endregion
@@ -360,28 +399,116 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
             <label htmlFor="themeSelect" className="font-bold text-sm">
               Theme
             </label>
-            <select
-              id="themeSelect"
-              value={task.theme}
-              onChange={(e) => handleTaskChange('theme', e.target.value)}
-              name="theme"
-              className={cn(
-                'block outline-none outline-2 rounded-lg px-2 outline-black py-1  focus:outline-blue-500 w-full'
-              )}
-            >
-              <option key="none" value={'inbox'} defaultChecked>
-                Inbox
-              </option>
 
-              {themes &&
-                themes.length > 0 &&
-                themes.map((theme) => (
-                  <option key={theme.id} value={theme.id}>
-                    {theme.name}
-                  </option>
-                ))}
-            </select>
+            <div className="flex items-center justify-between space-x-2">
+              <select
+                id="themeSelect"
+                value={task.theme}
+                onChange={(e) => handleTaskChange('theme', e.target.value)}
+                name="theme"
+                className={cn(
+                  'block outline-none outline-2 rounded-lg px-2 outline-black py-1  focus:outline-blue-500 w-full'
+                )}
+              >
+                <option key="none" value={'inbox'} defaultChecked>
+                  Inbox
+                </option>
+
+                {themes &&
+                  themes.length > 0 &&
+                  themes.map((theme) => (
+                    <option key={theme.id} value={theme.id}>
+                      {theme.name}
+                    </option>
+                  ))}
+              </select>
+
+              <button
+                className={cn(
+                  ' border-2 border-black rounded-lg transition-colors p-1',
+                  {
+                    'bg-green-500 hover:bg-green-700 active:bg-green-500':
+                      !isAddTheme,
+                    'bg-yellow-500 hover:bg-yellow-700 active:bg-yellow-500':
+                      isAddTheme,
+                  }
+                )}
+                onClick={handleToggleAddTheme}
+              >
+                {isAddTheme ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 4.5v15m7.5-7.5h-15"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
+
+          {isAddTheme && (
+            <div className="flex-col space-y-1">
+              <label htmlFor="newThemeName" className="font-bold text-sm">
+                Theme name
+              </label>
+              <div className="flex items-center justify-between space-x-2">
+                <TextField
+                  id="newThemeName"
+                  type="text"
+                  value={newThemeName}
+                  onChange={(e) => handleThemeNameChange(e.target.value)}
+                  placeholder="Theme name"
+                  className="w-full"
+                />
+
+                <button
+                  className={cn(
+                    ' border-2 border-black rounded-lg transition-colors p-1 bg-green-500 hover:bg-green-700 active:bg-green-500'
+                  )}
+                  onClick={handleAddTheme}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 4.5v15m7.5-7.5h-15"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Delete Button */}
           <button
