@@ -1,10 +1,10 @@
+import { INBOX_THEME_NAME } from '@/data/constants/firestorePaths';
 import { FirestoreError, collection } from 'firebase/firestore';
 import { useMemo } from 'react';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
-import { INBOX_THEME_NAME } from '../constants';
-import { COLLECTION_NAME } from '../enums/collectionName';
 import { db } from '../firebase';
-import { Task, taskConverter } from '../models/task';
+import { COLLECTION_NAME } from '../types/enums/collectionName';
+import { Task, taskConverter } from '../types/models/task';
 
 const useTasks = (
   accountId: string | undefined,

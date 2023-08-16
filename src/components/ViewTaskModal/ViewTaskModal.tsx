@@ -1,13 +1,13 @@
 import Modal from '@/components/Modal';
 import TextArea from '@/components/TextArea/TextArea';
 import TextField from '@/components/TextField';
-import { INBOX_THEME_NAME } from '@/lib/constants';
-import { COLLECTION_NAME } from '@/lib/enums/collectionName';
-import { db } from '@/lib/firebase';
-import useAccountContext from '@/lib/hooks/useAccountContext';
-import { Task, TaskRepeatData, TaskRepeatDataType } from '@/lib/models/task';
-import { Theme, themeConverter } from '@/lib/models/theme';
-import { cn } from '@/lib/utils';
+import { INBOX_THEME_NAME } from '@/data/constants/firestorePaths';
+import { db } from '@/firebase';
+import useAccountContext from '@/hooks/useAccountContext';
+import { COLLECTION_NAME } from '@/types/enums/collectionName';
+import { Task, TaskRepeatData, TaskRepeatDataType } from '@/types/models/task';
+import { Theme, themeConverter } from '@/types/models/theme';
+import { cn } from '@/utils/tailwind';
 import dayjs from 'dayjs';
 import {
   DocumentReference,
@@ -320,7 +320,7 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
                 task.repeat_data.type === 'custom' &&
                 task.repeat_data.from &&
                 task.repeat_data.to ? (
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center space-x-1">
                     {/* From */}
                     <div className="flex-col space-y-1">
                       <label htmlFor="from" className="font-bold text-sm">
@@ -410,7 +410,7 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
                   'block outline-none outline-2 rounded-lg px-2 outline-black py-1  focus:outline-blue-500 w-full'
                 )}
               >
-                <option key="none" value={'inbox'} defaultChecked>
+                <option key="inbox" value={'inbox'} defaultChecked>
                   Inbox
                 </option>
 

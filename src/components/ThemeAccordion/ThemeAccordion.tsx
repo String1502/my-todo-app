@@ -1,10 +1,10 @@
 import TaskItem from '@/components/TaskItem';
-import useAccountContext from '@/lib/hooks/useAccountContext';
-import useTasks from '@/lib/hooks/useTasks';
-import { ThemeContext } from '@/lib/hooks/useThemeContext';
-import { Task } from '@/lib/models/task';
-import { Theme } from '@/lib/models/theme';
-import { cn } from '@/lib/utils';
+import useAccountContext from '@/hooks/useAccountContext';
+import useTasks from '@/hooks/useTasks';
+import { ThemeContext } from '@/hooks/useThemeContext';
+import { Task } from '@/types/models/task';
+import { Theme } from '@/types/models/theme';
+import { cn } from '@/utils/tailwind';
 import React, { useState } from 'react';
 
 type AccordionProps = {

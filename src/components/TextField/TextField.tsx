@@ -1,6 +1,6 @@
 import FormLabel, { FormLabelProps } from '@/components/FormLabel/FormLabel';
-import CommonTextFieldProps from '@/lib/types/CommonTextFieldProps';
-import { cn } from '@/lib/utils';
+import CommonTextFieldProps from '@/types/CommonTextFieldProps';
+import { cn } from '@/utils/tailwind';
 import { useMemo } from 'react';
 
 type TextFieldProps = React.InputHTMLAttributes<HTMLInputElement> &

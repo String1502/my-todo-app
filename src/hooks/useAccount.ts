@@ -1,9 +1,9 @@
 import { FirestoreError, doc } from 'firebase/firestore';
 import { useMemo } from 'react';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
-import { COLLECTION_NAME } from '../enums/collectionName';
 import { db } from '../firebase';
-import { Account, accountConverter } from '../models/account';
+import { COLLECTION_NAME } from '../types/enums/collectionName';
+import { Account, accountConverter } from '../types/models/account';
 
 const useAccount = (
   accountId: string | undefined

@@ -1,8 +1,8 @@
-import { COLLECTION_NAME } from '@/lib/enums/collectionName';
-import { db } from '@/lib/firebase';
-import useAccountContext from '@/lib/hooks/useAccountContext';
-import { Tag, tagConverter } from '@/lib/models/tag';
-import { Task } from '@/lib/models/task';
+import { db } from '@/firebase';
+import useAccountContext from '@/hooks/useAccountContext';
+import { COLLECTION_NAME } from '@/types/enums/collectionName';
+import { Tag, tagConverter } from '@/types/models/tag';
+import { Task } from '@/types/models/task';
 import { doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 

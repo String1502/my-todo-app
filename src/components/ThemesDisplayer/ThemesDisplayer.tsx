@@ -1,14 +1,21 @@
 import AddTaskButon from '@/components/AddTaskButton/AddTaskButton';
 import IntervalButtonBar from '@/components/IntervalButtonBar';
-import { INBOX_THEME_NAME } from '@/lib/constants';
-import { COLLECTION_NAME } from '@/lib/enums/collectionName';
-import { auth, db } from '@/lib/firebase';
-import useAccountContext from '@/lib/hooks/useAccountContext';
-import useThemes from '@/lib/hooks/useThemes';
-import { Task, taskConverter } from '@/lib/models/task';
-import IntervalState from '@/lib/types/IntervalState';
-import { clone, cn, deepEqual } from '@/lib/utils';
-import { collection, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { INBOX_THEME_NAME } from '@/data/constants/firestorePaths';
+import { auth, db } from '@/firebase';
+import useAccountContext from '@/hooks/useAccountContext';
+import useThemes from '@/hooks/useThemes';
+import IntervalState from '@/types/IntervalState';
+import { COLLECTION_NAME } from '@/types/enums/collectionName';
+import { Task, taskConverter } from '@/types/models/task';
+import { clone, deepEqual } from '@/utils/objectData';
+import { cn } from '@/utils/tailwind';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from 'firebase/firestore';
 import { useMemo, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import ThemeAccordion from '../ThemeAccordion';
@@ -78,26 +85,93 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
   const handleSaveTaskChanges = async () => {
     if (!account) return;
 
-    const data = clone(selectedTask);
+    const data: Task = clone(selectedTask);
 
-    try {
+    if (cachedSelectedTask?.theme === 'inbox') {
+      const docRef = doc(
+        db,
+        `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${INBOX_THEME_NAME}/${data.id}`
+      ).withConverter(taskConverter);
+
       if (data.theme === 'inbox') {
-        const docRef = doc(
-          db,
-          `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${INBOX_THEME_NAME}/${data.id}`
-        ).withConverter(taskConverter);
-
-        await updateDoc(docRef, data);
+        try {
+          await updateDoc(docRef, data);
+        } catch (error) {
+          console.log(error);
+          return;
+        }
       } else {
-        const docRef = doc(
-          db,
-          `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${COLLECTION_NAME.THEMES}/${data?.theme}/${COLLECTION_NAME.TASKS}/${data.id}`
-        ).withConverter(taskConverter);
+        try {
+          await deleteDoc(docRef);
+        } catch (error) {
+          console.log(error);
+          return;
+        }
 
-        await updateDoc(docRef, data);
+        try {
+          const themeCollectionRef = collection(
+            db,
+            `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${COLLECTION_NAME.THEMES}/${data.theme}/${COLLECTION_NAME.TASKS}`
+          );
+
+          await addDoc(themeCollectionRef, data);
+        } catch (error) {
+          console.log(error);
+        }
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      const docRef = doc(
+        db,
+        `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${COLLECTION_NAME.THEMES}/${data?.theme}/${COLLECTION_NAME.TASKS}/${data.id}`
+      ).withConverter(taskConverter);
+
+      if (data.theme === 'inbox') {
+        try {
+          await deleteDoc(docRef);
+        } catch (error) {
+          console.log(error);
+          return;
+        }
+
+        try {
+          const inboxCollectionRef = collection(
+            db,
+            `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${INBOX_THEME_NAME}`
+          );
+          await addDoc(inboxCollectionRef, data);
+        } catch (error) {
+          console.log(error);
+          return;
+        }
+      } else {
+        if (data.theme === cachedSelectedTask?.theme) {
+          try {
+            await updateDoc(docRef, data);
+          } catch (error) {
+            console.log(error);
+            return;
+          }
+        } else {
+          try {
+            await deleteDoc(docRef);
+          } catch (error) {
+            console.log(error);
+            return;
+          }
+
+          try {
+            const themeCollectionRef = collection(
+              db,
+              `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${COLLECTION_NAME.THEMES}/${data.theme}/${COLLECTION_NAME.TASKS}`
+            );
+
+            await addDoc(themeCollectionRef, data);
+          } catch (error) {
+            console.log(error);
+            return;
+          }
+        }
+      }
     }
 
     handleViewTaskModalClose();
@@ -171,6 +245,7 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
           theme={selectedTaskTheme}
           actions={[
             <button
+              key="save-btn"
               className={cn(
                 `bg-green-500 border-2 border-black text-white 
                 hover:bg-green-600 gap-1

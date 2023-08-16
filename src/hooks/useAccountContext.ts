@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { Account } from '../models/account';
+import { Account } from '../types/models/account';
 
 const AccountContext = createContext<Account | undefined>(undefined);
 

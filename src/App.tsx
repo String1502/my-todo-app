@@ -1,6 +1,6 @@
 import NewTaskModal from '@/components/NewTaskModal';
-import { auth } from '@/lib/firebase';
-import { AccountContext } from '@/lib/hooks/useAccountContext';
+import { auth } from '@/firebase';
+import { AccountContext } from '@/hooks/useAccountContext';
 import { useState } from 'react';
 import {
   useAuthState,
@@ -9,7 +9,7 @@ import {
 } from 'react-firebase-hooks/auth';
 import Navbar from './components/Navbar';
 import ThemesDisplayer from './components/ThemesDisplayer';
-import useAccount from './lib/hooks/useAccount';
+import useAccount from './hooks/useAccount';
 
 const App = () => {
   //#region States

@@ -1,14 +1,3 @@
-import clsx, { ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-const cn = (...classes: ClassValue[]) => {
-  return twMerge(clsx(classes));
-};
-
-const clone = (obj: unknown) => {
-  return JSON.parse(JSON.stringify(obj));
-};
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function deepEqual(obj1: any, obj2: any): boolean {
   if (obj1 === obj2) {
@@ -40,4 +29,8 @@ function deepEqual(obj1: any, obj2: any): boolean {
   return true;
 }
 
-export { clone, cn, deepEqual };
+const clone = (obj: unknown) => {
+  return JSON.parse(JSON.stringify(obj));
+};
+
+export { clone, deepEqual };

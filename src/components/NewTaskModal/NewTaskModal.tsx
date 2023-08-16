@@ -1,16 +1,15 @@
-import { INBOX_THEME_NAME } from '@/lib/constants';
-import { COLLECTION_NAME } from '@/lib/enums/collectionName';
-import { db } from '@/lib/firebase';
-import useAccountContext from '@/lib/hooks/useAccountContext';
-import { Tag } from '@/lib/models/tag';
+import { INBOX_THEME_NAME } from '@/data/constants/firestorePaths';
+import { db } from '@/firebase';
+import useAccountContext from '@/hooks/useAccountContext';
+import { COLLECTION_NAME } from '@/types/enums/collectionName';
 import {
   Task,
   TaskRepeatData,
   TaskRepeatDataType,
   taskConverter,
-} from '@/lib/models/task';
-import { Theme, themeConverter } from '@/lib/models/theme';
-import { cn } from '@/lib/utils';
+} from '@/types/models/task';
+import { Theme, themeConverter } from '@/types/models/theme';
+import { cn } from '@/utils/tailwind';
 import dayjs from 'dayjs';
 import { addDoc, collection, getDocs } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
@@ -183,6 +182,7 @@ const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose, open }) => {
       handleClose={handleClose}
       actions={[
         <button
+          key="add-btn"
           className="bg-green-500 border-2 border-black text-white hover:bg-red-600 rounded-lg px-2 font-bold flex justify-between items-center"
           onClick={handleAdd}
         >
@@ -326,8 +326,9 @@ const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose, open }) => {
               newTask.repeat_data.type === 'custom' &&
               newTask.repeat_data.from &&
               newTask.repeat_data.to ? (
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center space-x-1">
                   {/* From */}
+
                   <div className="flex-col space-y-1">
                     <label htmlFor="from" className="font-bold text-sm">
                       From
