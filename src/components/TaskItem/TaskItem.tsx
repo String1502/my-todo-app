@@ -4,15 +4,18 @@ import useAccountContext from '@/hooks/useAccountContext';
 import { COLLECTION_NAME } from '@/types/enums/collectionName';
 import { Tag, tagConverter } from '@/types/models/tag';
 import { Task } from '@/types/models/task';
+import cn from '@/utils/tailwind';
+import { ClassValue } from 'clsx';
 import { doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 
 type TaskItemProps = {
   task: Task;
   onClick?: () => void;
+  className?: ClassValue;
 };
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, onClick }) => {
+const TaskItem: React.FC<TaskItemProps> = ({ task, onClick, className }) => {
   //#region States
 
   const [tags, setTags] = useState<Tag[]>([]);
@@ -93,7 +96,13 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onClick }) => {
   //#endregion
 
   return (
-    <section className="flex items-center gap-2 border-2 py-1 px-3 border-black rounded-md hover:bg-zinc-200 hover:cursor-pointer">
+    <section
+      className={cn(
+        `flex items-center gap-2 border-2 py-1 px-3 
+    border-black rounded-md hover:bg-zinc-200 hover:cursor-pointer`,
+        className
+      )}
+    >
       <div className="w-full" onClick={handleClick}>
         <div className="flex justify-between items-center py-1">
           <p className="font-medium">{task.title}</p>

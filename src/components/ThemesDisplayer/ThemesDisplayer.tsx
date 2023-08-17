@@ -18,6 +18,7 @@ import {
 } from 'firebase/firestore';
 import { useMemo, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import NewThemeModal from '../NewThemeModal';
 import ThemeAccordion from '../ThemeAccordion';
 import ViewTaskModal from '../ViewTaskModal';
 
@@ -27,7 +28,6 @@ type ThemesDisplayerProps = {
 
 const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
   //#region States
-
   const [user, userLoading, userError] = useAuthState(auth);
   const [selectedIntervalState, setSelectedIntervalState] =
     useState<IntervalState>('inbox');
@@ -45,6 +45,10 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
   const [cachedSelectedTask, setCachedSelectedTask] = useState<Task | null>(
     null
   );
+
+  const [newThemeModalOpen, setNewThemeModalOpen] = useState<boolean>(false);
+
+  //#endregion
 
   //#region UseEffects
 
@@ -177,6 +181,8 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
     handleViewTaskModalClose();
   };
 
+  const handleToggleAddThemeModal = () => setNewThemeModalOpen((prev) => !prev);
+
   //#endregion
 
   if (userLoading)
@@ -203,13 +209,21 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
               onChange={handleIntervalOptionChange}
             />
 
-            <AddTaskButon onClick={handleAddTask} />
+            <div className="flex gap-1">
+              <AddTaskButon
+                title="Add theme"
+                onClick={handleToggleAddThemeModal}
+              />
+              <AddTaskButon title="Add task" onClick={handleAddTask} />
+            </div>
           </section>
 
-          <div
-            id="toolBarDivider"
-            className="w-full h-1 bg-slate-900 my-2 space-y-2"
-          ></div>
+          {themes && themes.length > 0 && (
+            <div
+              id="toolBarDivider"
+              className="w-full h-1 bg-slate-900 my-2 space-y-2"
+            ></div>
+          )}
 
           <ul className="flex-col space-y-2">
             {themes && themes.length > 0
@@ -224,6 +238,10 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
               : null}
 
             <li key={'inbox'}>
+              <div className="py-1 pb-2">
+                <div className="w-full bg-black h-1 mt-2"></div>
+              </div>
+
               <ThemeAccordion onTaskClick={handleTaskClick} inbox />
             </li>
           </ul>
@@ -276,6 +294,11 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
           ]}
         />
       )}
+
+      <NewThemeModal
+        open={newThemeModalOpen}
+        handleClose={() => setNewThemeModalOpen(false)}
+      />
     </>
   );
 };

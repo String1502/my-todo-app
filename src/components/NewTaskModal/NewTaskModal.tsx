@@ -1,6 +1,7 @@
 import { INBOX_THEME_NAME } from '@/data/constants/firestorePaths';
 import { db } from '@/firebase';
 import useAccountContext from '@/hooks/useAccountContext';
+import useThemes from '@/hooks/useThemes';
 import { COLLECTION_NAME } from '@/types/enums/collectionName';
 import {
   Task,
@@ -17,7 +18,6 @@ import FormLabel from '../FormLabel';
 import Modal from '../Modal';
 import TextArea from '../TextArea';
 import TextField from '../TextField';
-
 interface NewTaskModalProps {
   handleClose: () => void;
   open: boolean;
@@ -36,12 +36,12 @@ const defaultTask: Task = {
 };
 
 const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose, open }) => {
-  //#region States
+  //#region Statesg
 
   const [newTask, setNewTask] = useState<Task>(defaultTask);
-  const [themes, setThemes] = useState<Theme[]>([]);
 
   const account = useAccountContext();
+  const [themes] = useThemes(account?.id);
 
   const [isAddTheme, setIsAddTheme] = useState<boolean>(false);
 
