@@ -32,7 +32,7 @@ const ThemeAccordion: React.FC<AccordionProps> = ({
   };
 
   const handleTaskClick = (task: Task) => {
-    onTaskClick && onTaskClick(task, theme ? theme.id : '');
+    onTaskClick && onTaskClick(task, theme ? theme.id : 'inbox');
   };
 
   return (

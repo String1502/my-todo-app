@@ -35,6 +35,7 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
   handleClose,
   task,
   setTask,
+  theme,
 }) => {
   //#region States
 
@@ -139,24 +140,35 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
       return;
     }
 
+    console.log(task);
+
     let docRef: DocumentReference;
 
-    if (task.theme === 'inbox') {
-      docRef = doc(
-        db,
-        `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${INBOX_THEME_NAME}/${task.id}`
-      );
-    } else {
-      docRef = doc(
-        db,
-        `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${COLLECTION_NAME.THEMES}/${task.theme}/${COLLECTION_NAME.TASKS}/${task.id}`
-      );
-    }
-
     try {
+      if (theme === 'inbox') {
+        docRef = doc(
+          db,
+          COLLECTION_NAME.ACCOUNTS,
+          account.id,
+          INBOX_THEME_NAME,
+          task.id
+        );
+      } else {
+        docRef = doc(
+          db,
+          COLLECTION_NAME.ACCOUNTS,
+          account.id,
+          COLLECTION_NAME.THEMES,
+          task.theme,
+          COLLECTION_NAME.TASKS,
+          task.id
+        );
+      }
+
       await deleteDoc(docRef);
     } catch (error) {
       console.log(error);
+      return;
     }
 
     handleClose && handleClose();

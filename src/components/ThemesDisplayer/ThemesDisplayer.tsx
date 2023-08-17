@@ -112,7 +112,7 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
           const themeCollectionRef = collection(
             db,
             `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${COLLECTION_NAME.THEMES}/${data.theme}/${COLLECTION_NAME.TASKS}`
-          );
+          ).withConverter(taskConverter);
 
           await addDoc(themeCollectionRef, data);
         } catch (error) {
@@ -122,7 +122,7 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
     } else {
       const docRef = doc(
         db,
-        `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${COLLECTION_NAME.THEMES}/${data?.theme}/${COLLECTION_NAME.TASKS}/${data.id}`
+        `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${COLLECTION_NAME.THEMES}/${cachedSelectedTask?.theme}/${COLLECTION_NAME.TASKS}/${data.id}`
       ).withConverter(taskConverter);
 
       if (data.theme === 'inbox') {
@@ -137,7 +137,7 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
           const inboxCollectionRef = collection(
             db,
             `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${INBOX_THEME_NAME}`
-          );
+          ).withConverter(taskConverter);
           await addDoc(inboxCollectionRef, data);
         } catch (error) {
           console.log(error);
@@ -163,7 +163,7 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
             const themeCollectionRef = collection(
               db,
               `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${COLLECTION_NAME.THEMES}/${data.theme}/${COLLECTION_NAME.TASKS}`
-            );
+            ).withConverter(taskConverter);
 
             await addDoc(themeCollectionRef, data);
           } catch (error) {
