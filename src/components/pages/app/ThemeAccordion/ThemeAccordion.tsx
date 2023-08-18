@@ -27,26 +27,21 @@ const ThemeAccordion: React.FC<AccordionProps> = ({
   const [open, setOpen] = useState<boolean>(false);
 
   const account = useAccountContext();
-  const [tasks, tasksLoading, setTasksLoading] = useTasks(
-    account?.id,
-    inbox,
-    theme?.id
-  );
+  const [tasks] = useTasks(account?.id, inbox, theme?.id);
 
   //#endregion
 
   //#region UseMemos
 
-  const [undoneTasks, doneTasks, neverTasks]: [Task[], Task[], Task[]] =
-    useMemo(() => {
-      if (!tasks) return [[], [], []];
+  const [undoneTasks, doneTasks]: [Task[], Task[], Task[]] = useMemo(() => {
+    if (!tasks) return [[], [], []];
 
-      return [
-        tasks.filter((task) => task.state === 'undone'),
-        tasks.filter((task) => task.state === 'done'),
-        tasks.filter((task) => task.state === 'never'),
-      ];
-    }, [tasks]);
+    return [
+      tasks.filter((task) => task.state === 'undone'),
+      tasks.filter((task) => task.state === 'done'),
+      tasks.filter((task) => task.state === 'never'),
+    ];
+  }, [tasks]);
 
   const background: string = useMemo(() => `bg-${colorRandomizer()}`, []);
 

@@ -14,14 +14,15 @@ import Navbar from './components/pages/app/Navbar';
 const App = () => {
   //#region States
 
-  const [user, userLoading, userError] = useAuthState(auth);
-  const [account, accountLoading, accountError] = useAccount(user?.uid);
+  const [user] = useAuthState(auth);
+  const [account] = useAccount(user?.uid);
 
   const [newTaskModalOpen, setNewTaskModalOpen] = useState<boolean>(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [signInWithGoogle, signInUser, signInLoading, signInError] =
     useSignInWithGoogle(auth);
-  const [signOut, signOutLoading, signOutError] = useSignOut(auth);
+  const [signOut] = useSignOut(auth);
 
   // NOTE - For add task from theme accordion
   const [tempTheme, setTempTheme] = useState<string>('');
