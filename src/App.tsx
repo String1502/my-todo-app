@@ -1,4 +1,4 @@
-import NewTaskModal from '@/components/NewTaskModal';
+import NewTaskModal from '@/components/pages/app/NewTaskModal';
 import { auth } from '@/firebase';
 import { AccountContext } from '@/hooks/useAccountContext';
 import { useState } from 'react';
@@ -7,8 +7,8 @@ import {
   useSignInWithGoogle,
   useSignOut,
 } from 'react-firebase-hooks/auth';
-import Navbar from './components/Navbar';
-import ThemesDisplayer from './components/ThemesDisplayer';
+import Navbar from './components/pages/app/Navbar';
+import ThemesDisplayer from './components/pages/app/ThemesDisplayer';
 import useAccount from './hooks/useAccount';
 
 const App = () => {

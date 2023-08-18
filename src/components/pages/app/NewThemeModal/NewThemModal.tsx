@@ -3,7 +3,7 @@ import useAccountContext from '@/hooks/useAccountContext';
 import { Theme } from '@/types/models/theme';
 import cn from '@/utils/tailwind';
 import { ChangeEventHandler, useState } from 'react';
-import Modal from '../Modal';
+import Modal from '../../../common/Modal';
 
 type NewThemeModalProps = {
   open: boolean;

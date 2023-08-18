@@ -1,4 +1,6 @@
-import FormLabel, { FormLabelProps } from '@/components/FormLabel/FormLabel';
+import FormLabel, {
+  FormLabelProps,
+} from '@/components/common/FormLabel/FormLabel';
 import CommonTextFieldProps from '@/types/CommonTextFieldProps';
 import { cn } from '@/utils/tailwind';
 import { useMemo } from 'react';

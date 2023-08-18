@@ -1,6 +1,6 @@
-import Modal from '@/components/Modal';
-import TextArea from '@/components/TextArea/TextArea';
-import TextField from '@/components/TextField';
+import Modal from '@/components/common/Modal';
+import TextArea from '@/components/common/TextArea/TextArea';
+import TextField from '@/components/common/TextField';
 import { INBOX_THEME_NAME } from '@/data/constants/firestorePaths';
 import { db } from '@/firebase';
 import useAccountContext from '@/hooks/useAccountContext';
@@ -18,7 +18,7 @@ import {
   getDocs,
 } from 'firebase/firestore';
 import { ComponentProps, FC, useEffect, useState } from 'react';
-import FormLabel from '../FormLabel';
+import FormLabel from '../../../common/FormLabel';
 
 type ViewTaskModal = Omit<
   ComponentProps<typeof Modal>,

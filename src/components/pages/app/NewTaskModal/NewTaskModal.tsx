@@ -9,15 +9,15 @@ import {
   TaskRepeatDataType,
   taskConverter,
 } from '@/types/models/task';
-import { Theme, themeConverter } from '@/types/models/theme';
+import { Theme } from '@/types/models/theme';
 import { cn } from '@/utils/tailwind';
 import dayjs from 'dayjs';
-import { addDoc, collection, getDocs } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
-import FormLabel from '../FormLabel';
-import Modal from '../Modal';
-import TextArea from '../TextArea';
-import TextField from '../TextField';
+import { addDoc, collection } from 'firebase/firestore';
+import { useState } from 'react';
+import FormLabel from '../../../common/FormLabel';
+import Modal from '../../../common/Modal';
+import TextArea from '../../../common/TextArea';
+import TextField from '../../../common/TextField';
 interface NewTaskModalProps {
   handleClose: () => void;
   open: boolean;
@@ -50,29 +50,6 @@ const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose, open }) => {
   //#endregion
 
   //#region UseEffect
-
-  useEffect(() => {
-    const getData = async () => {
-      if (!account) return;
-
-      const themesPath = `${COLLECTION_NAME.ACCOUNTS}/${account.id}/${COLLECTION_NAME.THEMES}`;
-      const themesSnapshot = await getDocs(
-        collection(db, themesPath).withConverter(themeConverter)
-      );
-
-      const themes: Theme[] = [];
-
-      themesSnapshot.forEach((theme) => {
-        if (theme.exists()) {
-          themes.push(theme.data());
-        }
-      });
-
-      setThemes(themes);
-    };
-
-    getData();
-  }, [account]);
 
   //#endregion
 

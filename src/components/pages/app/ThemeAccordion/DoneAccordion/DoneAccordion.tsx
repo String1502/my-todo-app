@@ -1,4 +1,4 @@
-import TaskItem from '@/components/TaskItem';
+import TaskItem from '@/components/pages/app/TaskItem';
 import { Task } from '@/types/models/task';
 import cn from '@/utils/tailwind';
 import React, { useState } from 'react';

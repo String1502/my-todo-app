@@ -1,4 +1,4 @@
-import TaskItem from '@/components/TaskItem';
+import TaskItem from '@/components/pages/app/TaskItem';
 import { deleteTheme } from '@/data/api/theme';
 import useAccountContext from '@/hooks/useAccountContext';
 import useTasks from '@/hooks/useTasks';

@@ -1,5 +1,8 @@
-import AddTaskButon from '@/components/AddTaskButton/AddTaskButton';
-import IntervalButtonBar from '@/components/IntervalButtonBar';
+import AddTaskButon from '@/components/common/AddTaskButton/AddTaskButton';
+import IntervalButtonBar from '@/components/pages/app/IntervalButtonBar';
+import NewThemeModal from '@/components/pages/app/NewThemeModal';
+import ThemeAccordion from '@/components/pages/app/ThemeAccordion';
+import ViewTaskModal from '@/components/pages/app/ViewTaskModal';
 import { INBOX_THEME_NAME } from '@/data/constants/firestorePaths';
 import { auth, db } from '@/firebase';
 import useAccountContext from '@/hooks/useAccountContext';
@@ -18,9 +21,6 @@ import {
 } from 'firebase/firestore';
 import { useMemo, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import NewThemeModal from '../NewThemeModal';
-import ThemeAccordion from '../ThemeAccordion';
-import ViewTaskModal from '../ViewTaskModal';
 
 type ThemesDisplayerProps = {
   handleAddTask: () => void;
