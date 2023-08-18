@@ -103,6 +103,11 @@ const IntervalButtonBar: React.FC<IntervalButtonBarProps> = ({
         }
         onClick={() => onChange('next-7-days')}
       />
+
+      {/* Not implemented yet text */}
+      <div className="flex items-center   rounded-lg p-1 border-2 border-transparent hover:border-blue-500 transition-all hover:-translate-y-1 cursor-default">
+        <p className="font-bold">(Not implemented yet)</p>
+      </div>
     </div>
   );
 };
