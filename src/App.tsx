@@ -65,12 +65,12 @@ const App = () => {
         signIn={handleSignIn}
       />
 
-      <div id="container" className="container py-8 mx-auto flex-col">
+      <main id="container" className="container py-8 mx-auto flex-col">
         <ThemesDisplayer
           handleAddTask={handleAddTask}
           addTask={handleAddTask}
         />
-      </div>
+      </main>
 
       <NewTaskModal
         handleClose={handleCloseModal}

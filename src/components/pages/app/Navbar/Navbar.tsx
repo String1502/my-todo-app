@@ -23,7 +23,11 @@ const Navbar: React.FC<NavbarProps> = ({
       >
         <div
           id="logo"
-          className="flex gap-2 rounded-md border-2 border-blue-500 p-1 px-3 cursor-default"
+          className="flex gap-2 rounded-md border-2 border-blue-500 p-1 px-3 
+          cursor-default
+          hover:-translate-y-1 hover:border-4
+          transition-all
+          "
         >
           <div id="logoIcon" className="text-blue-500">
             <svg

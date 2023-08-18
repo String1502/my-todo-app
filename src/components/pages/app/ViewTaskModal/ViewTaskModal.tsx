@@ -189,7 +189,6 @@ const ViewTaskModal: FC<ViewTaskModal> = ({
 
     const data: Omit<Theme, 'id'> = {
       name: newThemeName,
-      tasks: [],
     };
 
     addDoc(collectionRef, data);

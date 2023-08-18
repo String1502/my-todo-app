@@ -157,7 +157,6 @@ const NewTaskModal: React.FC<NewTaskModalProps> = ({
 
     const data: Omit<Theme, 'id'> = {
       name: newThemeName,
-      tasks: [],
     };
 
     try {
