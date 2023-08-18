@@ -13,7 +13,7 @@ import { Theme } from '@/types/models/theme';
 import { cn } from '@/utils/tailwind';
 import dayjs from 'dayjs';
 import { addDoc, collection } from 'firebase/firestore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import FormLabel from '../../../common/FormLabel';
 import Modal from '../../../common/Modal';
 import TextArea from '../../../common/TextArea';
@@ -21,6 +21,7 @@ import TextField from '../../../common/TextField';
 interface NewTaskModalProps {
   handleClose: () => void;
   open: boolean;
+  theme?: string | undefined;
 }
 
 const defaultTask: Task = {
@@ -35,10 +36,16 @@ const defaultTask: Task = {
   theme: 'inbox',
 };
 
-const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose, open }) => {
-  //#region Statesg
+const NewTaskModal: React.FC<NewTaskModalProps> = ({
+  handleClose,
+  open,
+  theme,
+}) => {
+  //#region States
 
-  const [newTask, setNewTask] = useState<Task>(defaultTask);
+  const [newTask, setNewTask] = useState<Task>({
+    ...defaultTask,
+  });
 
   const account = useAccountContext();
   const [themes] = useThemes(account?.id);
@@ -50,6 +57,12 @@ const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose, open }) => {
   //#endregion
 
   //#region UseEffect
+
+  useEffect(() => {
+    if (theme) {
+      setNewTask((prev) => ({ ...prev, theme: theme }));
+    }
+  }, [theme]);
 
   //#endregion
 
@@ -133,7 +146,7 @@ const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose, open }) => {
     setNewThemeName(value);
   };
 
-  const handleAddTheme = () => {
+  const handleAddTheme = async () => {
     if (!newThemeName) {
       alert('Please enter theme name');
       return;
@@ -147,7 +160,14 @@ const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose, open }) => {
       tasks: [],
     };
 
-    addDoc(collectionRef, data);
+    try {
+      await addDoc(collectionRef, data);
+    } catch (error) {
+      console.log(error);
+    }
+
+    setNewThemeName('');
+    handleToggleAddTheme();
   };
 
   //#endregion
@@ -471,7 +491,7 @@ const NewTaskModal: React.FC<NewTaskModalProps> = ({ handleClose, open }) => {
 
                 <button
                   className={cn(
-                    ' border-2 border-black rounded-lg transition-colors p-1 bg-green-500 hover:bg-green-700 active:bg-green-500'
+                    'border-2 border-black rounded-lg transition-colors p-1 bg-green-500 hover:bg-green-700 active:bg-green-500'
                   )}
                   onClick={handleAddTheme}
                 >

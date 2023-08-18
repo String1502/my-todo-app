@@ -24,9 +24,13 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 
 type ThemesDisplayerProps = {
   handleAddTask: () => void;
+  addTask: (theme?: string | undefined) => void;
 };
 
-const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
+const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({
+  handleAddTask,
+  addTask,
+}) => {
   //#region States
   const [user, userLoading, userError] = useAuthState(auth);
   const [selectedIntervalState, setSelectedIntervalState] =
@@ -232,6 +236,7 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
                     <ThemeAccordion
                       theme={theme}
                       onTaskClick={handleTaskClick}
+                      addTask={addTask}
                     />
                   </li>
                 ))
@@ -242,7 +247,11 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({ handleAddTask }) => {
                 <div className="w-full bg-black h-1 mt-2"></div>
               </div>
 
-              <ThemeAccordion onTaskClick={handleTaskClick} inbox />
+              <ThemeAccordion
+                onTaskClick={handleTaskClick}
+                addTask={addTask}
+                inbox
+              />
             </li>
           </ul>
         </>

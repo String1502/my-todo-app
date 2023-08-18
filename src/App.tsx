@@ -23,11 +23,18 @@ const App = () => {
     useSignInWithGoogle(auth);
   const [signOut, signOutLoading, signOutError] = useSignOut(auth);
 
+  // NOTE - For add task from theme accordion
+  const [tempTheme, setTempTheme] = useState<string>('');
+
   //#endregion
 
-  //#region Handlers
+  //#region Hdandlers
 
-  const handleAddTask = () => setNewTaskModalOpen(true);
+  const handleAddTask = (theme?: string) => {
+    setNewTaskModalOpen(true);
+
+    theme && setTempTheme(theme);
+  };
 
   const handleCloseModal = () => setNewTaskModalOpen(false);
 
@@ -59,10 +66,17 @@ const App = () => {
       />
 
       <div id="container" className="container py-8 mx-auto flex-col">
-        <ThemesDisplayer handleAddTask={handleAddTask} />
+        <ThemesDisplayer
+          handleAddTask={handleAddTask}
+          addTask={handleAddTask}
+        />
       </div>
 
-      <NewTaskModal handleClose={handleCloseModal} open={newTaskModalOpen} />
+      <NewTaskModal
+        handleClose={handleCloseModal}
+        open={newTaskModalOpen}
+        theme={tempTheme}
+      />
     </AccountContext.Provider>
   );
 };

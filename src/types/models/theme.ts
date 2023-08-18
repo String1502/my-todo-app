@@ -1,10 +1,8 @@
 import { FirestoreDataConverter } from 'firebase/firestore';
-import { Task } from './task';
 
 type Theme = {
   id: string;
   name: string;
-  tasks: Task[];
 };
 
 const themeConverter: FirestoreDataConverter<Theme> = {

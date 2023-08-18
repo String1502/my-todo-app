@@ -14,12 +14,14 @@ type AccordionProps = {
   theme?: Theme;
   onTaskClick?: (task: Task, theme: string) => void;
   inbox?: boolean;
+  addTask: (theme?: string | undefined) => void;
 };
 
 const ThemeAccordion: React.FC<AccordionProps> = ({
   theme,
   onTaskClick,
   inbox = false,
+  addTask,
 }) => {
   //#region States
   const [open, setOpen] = useState<boolean>(false);
@@ -84,9 +86,11 @@ const ThemeAccordion: React.FC<AccordionProps> = ({
               background
             )}
             aria-expanded={!open}
-            onClick={handleToggle}
           >
-            <div className="flex items-center gap-2">
+            <div
+              className="flex items-center gap-2 w-full"
+              onClick={handleToggle}
+            >
               <p className="text-lg font-bold ">
                 {theme ? theme.name : inbox ? 'Inbox' : ''}
               </p>
@@ -99,10 +103,39 @@ const ThemeAccordion: React.FC<AccordionProps> = ({
 
             {/* Action zone */}
             <div className="flex gap-1 items-center">
-              <div className="mr-2" onClick={handleDeleteTheme}>
+              <div className="mr-2 flex gap-1">
+                <button
+                  className="flex gap-1 border-2 border-black rounded-lg
+                 p-1 font-bold text-white 
+                 bg-green-500 hover:bg-green-600 active:bg-green-500"
+                  onClick={() => addTask(inbox ? 'inbox' : theme?.id)}
+                >
+                  <p className="whitespace-nowrap">Add Task</p>
+                  <span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 4.5v15m7.5-7.5h-15"
+                      />
+                    </svg>
+                  </span>
+                </button>
                 {inbox ? null : (
-                  <button className="flex gap-1 border-2 border-black rounded-lg p-1 font-bold text-white bg-red-500">
-                    <span>Delete</span>
+                  <button
+                    className="flex gap-1 border-2 border-black 
+                  rounded-lg p-1 font-bold text-white 
+                  bg-red-500 hover:bg-red-600 active:bg-red-500"
+                    onClick={handleDeleteTheme}
+                  >
+                    <p className="whitespace-nowrap">Delete</p>
                     <span>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -123,6 +156,7 @@ const ThemeAccordion: React.FC<AccordionProps> = ({
                 )}
               </div>
 
+              {/* Toggle Chevron */}
               <div
                 className={cn({ '-rotate-90': !open }, 'transition-transform')}
               >

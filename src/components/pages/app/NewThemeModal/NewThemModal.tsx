@@ -49,7 +49,6 @@ const NewThemModal: React.FC<NewThemeModalProps> = ({ open, handleClose }) => {
 
     const theme: Omit<Theme, 'id'> = {
       name: themeName,
-      tasks: [],
     };
 
     try {
