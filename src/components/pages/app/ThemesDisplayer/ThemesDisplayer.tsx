@@ -9,9 +9,14 @@ import useAccountContext from '@/hooks/useAccountContext';
 import useThemes from '@/hooks/useThemes';
 import IntervalState from '@/types/IntervalState';
 import { COLLECTION_NAME } from '@/types/enums/collectionName';
-import { Task, taskConverter } from '@/types/models/task';
+import {
+  Task,
+  TaskRepeatData,
+  TaskRepeatDataType,
+  taskConverter,
+} from '@/types/models/task';
 import { clone, deepEqual } from '@/utils/objectData';
-import { cn } from '@/utils/tailwind';
+import dayjs from 'dayjs';
 import {
   addDoc,
   collection,
@@ -19,7 +24,7 @@ import {
   doc,
   updateDoc,
 } from 'firebase/firestore';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 type ThemesDisplayerProps = {
@@ -38,10 +43,7 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({
 
   const account = useAccountContext();
 
-  // const [themes, setThemes] = useState<Theme[]>([]);
   const [themes] = useThemes(account?.id);
-
-  const [viewTaskModalOpen, setViewTaskModalOpen] = useState<boolean>(false);
 
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [selectedTaskTheme, setSelectedThemeTask] = useState<string>('');
@@ -50,7 +52,12 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({
     null
   );
 
-  const [newThemeModalOpen, setNewThemeModalOpen] = useState<boolean>(false);
+  //#endregion
+
+  //#region Refs
+
+  const viewTaskModalRef = useRef<HTMLDialogElement>(null);
+  const newThemeModalRef = useRef<HTMLDialogElement>(null);
 
   //#endregion
 
@@ -77,14 +84,12 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({
   };
 
   const handleTaskClick = (task: Task, theme: string) => {
-    setViewTaskModalOpen(true);
     setSelectedTask(clone(task));
     setCachedSelectedTask(clone(task));
     setSelectedThemeTask(theme);
   };
 
   const handleViewTaskModalClose = () => {
-    setViewTaskModalOpen(false);
     setSelectedTask(null);
     setCachedSelectedTask(null);
     setSelectedThemeTask('');
@@ -185,7 +190,70 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({
     handleViewTaskModalClose();
   };
 
-  const handleToggleAddThemeModal = () => setNewThemeModalOpen((prev) => !prev);
+  const handleTaskChange = (name: keyof Task, value: Task[keyof Task]) => {
+    setSelectedTask((prev) => {
+      return prev ? { ...prev, [name]: value } : null;
+    });
+  };
+
+  const handleRepeatChange = (repeat: boolean) => {
+    if (repeat) {
+      const repeatData: TaskRepeatData = {
+        type: 'day',
+        interval: 1,
+      };
+
+      setSelectedTask((prev) => {
+        return prev
+          ? {
+              ...prev,
+              repeat_data: repeatData,
+              repeat: true,
+            }
+          : null;
+      });
+    } else {
+      setSelectedTask((prev) => {
+        if (!prev) return null;
+
+        const cloned = { ...prev, repeat: false };
+        delete cloned.repeat_data;
+        return cloned;
+      });
+    }
+  };
+
+  const handleRepeatTypeChange = (type: TaskRepeatDataType) => {
+    if (!selectedTask) return;
+
+    const existed = !!selectedTask.repeat_data;
+
+    const repeat_data: TaskRepeatData = existed
+      ? { ...selectedTask.repeat_data, type }
+      : { type };
+
+    if (existed) {
+      if (type === 'custom') {
+        const now = dayjs();
+        repeat_data.from = now.toDate();
+        repeat_data.to = now.add(7, 'day').toDate();
+        delete repeat_data.interval;
+      } else {
+        repeat_data.interval = 1;
+        delete repeat_data.from;
+        delete repeat_data.to;
+      }
+    }
+
+    setSelectedTask((prev) => {
+      if (!prev) return null;
+
+      return { ...prev, repeat_data: repeat_data };
+    });
+  };
+
+  const handleOpenNewThemeModal = () => newThemeModalRef.current?.showModal();
+  const handleCloseNewThemeModal = () => newThemeModalRef.current?.close();
 
   //#endregion
 
@@ -216,7 +284,7 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({
             <div className="flex gap-1">
               <AddTaskButon
                 title="Add theme"
-                onClick={handleToggleAddThemeModal}
+                onClick={handleOpenNewThemeModal}
               />
               <AddTaskButon title="Add task" onClick={handleAddTask} />
             </div>
@@ -265,48 +333,21 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({
 
       {selectedTask && (
         <ViewTaskModal
-          open={viewTaskModalOpen}
-          handleClose={handleViewTaskModalClose}
+          ref={viewTaskModalRef}
+          onClose={handleViewTaskModalClose}
           task={selectedTask}
-          setTask={setSelectedTask}
           theme={selectedTaskTheme}
-          actions={[
-            <button
-              key="save-btn"
-              className={cn(
-                `bg-green-500 border-2 border-black text-white 
-                hover:bg-green-600 gap-1
-                  rounded-lg px-2 font-bold flex justify-between items-center
-                  disabled:bg-gray-500`
-              )}
-              onClick={handleSaveTaskChanges}
-              disabled={!taskChanged}
-            >
-              <span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"
-                  />
-                </svg>
-              </span>
-              <span>Save</span>
-            </button>,
-          ]}
+          taskChanged={taskChanged}
+          onTaskChange={handleTaskChange}
+          onSaveChanges={handleSaveTaskChanges}
+          onRepeatChange={handleRepeatChange}
+          onRepeatTypeChange={handleRepeatTypeChange}
         />
       )}
 
       <NewThemeModal
-        open={newThemeModalOpen}
-        handleClose={() => setNewThemeModalOpen(false)}
+        onClose={handleCloseNewThemeModal}
+        ref={newThemeModalRef}
       />
     </>
   );

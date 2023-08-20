@@ -4,7 +4,7 @@ import ThemesDisplayer from '@/components/pages/app/ThemesDisplayer';
 import { auth } from '@/firebase';
 import useAccount from '@/hooks/useAccount';
 import { AccountContext } from '@/hooks/useAccountContext';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   useAuthState,
   useSignInWithGoogle,
@@ -17,8 +17,6 @@ const Home = () => {
   const [user] = useAuthState(auth);
   const [account] = useAccount(user?.uid);
 
-  const [newTaskModalOpen, setNewTaskModalOpen] = useState<boolean>(false);
-
   const [signInWithGoogle, , signInLoading] = useSignInWithGoogle(auth);
   const [signOut] = useSignOut(auth);
 
@@ -27,15 +25,22 @@ const Home = () => {
 
   //#endregion
 
-  //#region Hdandlers
+  //#region Refs
+
+  const newTaskDialogRef = useRef<HTMLDialogElement>(null);
+
+  //#endregion
+
+  //#region Handlers
+
+  const handleOpenModal = () => newTaskDialogRef.current?.showModal();
+  const handleCloseModal = () => newTaskDialogRef.current?.close();
 
   const handleAddTask = (theme?: string) => {
-    setNewTaskModalOpen(true);
-
     theme && setTempTheme(theme);
-  };
 
-  const handleCloseModal = () => setNewTaskModalOpen(false);
+    handleOpenModal();
+  };
 
   const handleSignIn = () => {
     try {
@@ -72,9 +77,9 @@ const Home = () => {
       </main>
 
       <NewTaskModal
-        handleClose={handleCloseModal}
-        open={newTaskModalOpen}
+        ref={newTaskDialogRef}
         theme={tempTheme}
+        onClose={handleCloseModal}
       />
     </AccountContext.Provider>
   );
