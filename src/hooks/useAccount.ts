@@ -1,4 +1,4 @@
-import { FirestoreError, doc } from 'firebase/firestore';
+import { doc } from 'firebase/firestore';
 import { useMemo } from 'react';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { db } from '../firebase';
@@ -7,18 +7,20 @@ import { Account, accountConverter } from '../types/models/account';
 
 const useAccount = (
   accountId: string | undefined
-): [Account | undefined, boolean, FirestoreError | undefined] => {
+): ReturnType<typeof useDocumentData<Account>> => {
   const query = useMemo(() => {
     if (!accountId) return undefined;
 
-    return doc(db, COLLECTION_NAME.ACCOUNTS, accountId).withConverter(
+    const query = doc(db, COLLECTION_NAME.ACCOUNTS, accountId).withConverter(
       accountConverter
     );
+
+    return query;
   }, [accountId]);
 
-  const [account, loading, error] = useDocumentData(query);
+  const result = useDocumentData(query);
 
-  return [account, loading, error];
+  return result;
 };
 
 export default useAccount;

@@ -13,8 +13,8 @@ const Modal = forwardRef<HTMLDialogElement, ModalProps>(
       <dialog
         ref={ref}
         className={`bg-white rounded-lg border-4 border-blue-500 p-4
-                        max-w-lg z-10 overflow-y-auto w-96 backdrop:bg-black/50`}
-        style={{ maxHeight: '80vh' }}
+                        max-w-lg z-10 overflow-y-auto w-96 backdrop:bg-black/50
+                        max-h-[80vh]`}
       >
         <div className="flex justify-between">
           <p className="text-base text-black font-bold">{title}</p>

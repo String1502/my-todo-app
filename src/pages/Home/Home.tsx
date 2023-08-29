@@ -1,6 +1,6 @@
 import Navbar from '@/components/pages/app/Navbar';
 import NewTaskModal from '@/components/pages/app/NewTaskModal';
-import ThemesDisplayer from '@/components/pages/app/ThemesDisplayer';
+import { default as ThemesDisplacer } from '@/components/pages/app/ThemesDisplacer';
 import { auth } from '@/firebase';
 import useAccount from '@/hooks/useAccount';
 import { AccountContext } from '@/hooks/useAccountContext';
@@ -69,8 +69,8 @@ const Home = () => {
         signIn={handleSignIn}
       />
 
-      <main id="container" className="container py-8 mx-auto flex-col">
-        <ThemesDisplayer
+      <main id="container" className="container flex-col py-8 mx-auto">
+        <ThemesDisplacer
           handleAddTask={handleAddTask}
           addTask={handleAddTask}
         />

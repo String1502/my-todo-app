@@ -5,5 +5,5 @@ export { default as NewTaskModal } from './NewTaskModal';
 export { default as NewThemeModal } from './NewThemeModal';
 export { default as TaskItem } from './TaskItem';
 export { default as ThemeAccordion } from './ThemeAccordion';
-export { default as ThemesDisplayer } from './ThemesDisplayer';
+export { default as ThemesDisplayer } from './ThemesDisplacer';
 export { default as ViewTaskModal } from './ViewTaskModal';

@@ -491,7 +491,8 @@ const NewTaskModal = forwardRef<HTMLDialogElement | null, NewTaskModalProps>(
 
                   <button
                     className={cn(
-                      'border-2 border-black rounded-lg transition-colors p-1 bg-green-500 hover:bg-green-700 active:bg-green-500'
+                      `border-2 border-black rounded-lg transition-colors p-1 
+                      bg-green-500 hover:bg-green-700 active:bg-green-500`
                     )}
                     onClick={handleAddTheme}
                   >

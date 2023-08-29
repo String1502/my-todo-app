@@ -1,4 +1,4 @@
-import AddTaskButon from '@/components/common/AddTaskButton/AddTaskButton';
+import AddTaskButton from '@/components/common/AddTaskButton/AddTaskButton';
 import IntervalButtonBar from '@/components/pages/app/IntervalButtonBar';
 import NewThemeModal from '@/components/pages/app/NewThemeModal';
 import ThemeAccordion from '@/components/pages/app/ThemeAccordion';
@@ -27,12 +27,12 @@ import {
 import { useMemo, useRef, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
-type ThemesDisplayerProps = {
+type ThemesDisplacerProps = {
   handleAddTask: () => void;
   addTask: (theme?: string | undefined) => void;
 };
 
-const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({
+const ThemesDisplacer: React.FC<ThemesDisplacerProps> = ({
   handleAddTask,
   addTask,
 }) => {
@@ -259,14 +259,14 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({
 
   if (userLoading)
     return (
-      <p id="loginPleaseText" className="text-center font-bold text-lg">
+      <p id="loginPleaseText" className="text-lg font-bold text-center">
         Loading...
       </p>
     );
 
   if (userError)
     return (
-      <p id="loginPleaseText" className="text-center font-bold text-lg">
+      <p id="loginPleaseText" className="text-lg font-bold text-center">
         Vui lòng đăng nhập để sử dụng
       </p>
     );
@@ -275,25 +275,25 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({
     <>
       {user ? (
         <>
-          <section id="toolBar" className="flex justify-between items-center">
+          <section id="toolBar" className="flex items-center justify-between">
             <IntervalButtonBar
               value={selectedIntervalState}
               onChange={handleIntervalOptionChange}
             />
 
             <div className="flex gap-1">
-              <AddTaskButon
+              <AddTaskButton
                 title="Add theme"
                 onClick={handleOpenNewThemeModal}
               />
-              <AddTaskButon title="Add task" onClick={handleAddTask} />
+              <AddTaskButton title="Add task" onClick={handleAddTask} />
             </div>
           </section>
 
           {themes && themes.length > 0 && (
             <div
               id="toolBarDivider"
-              className="w-full h-1 bg-slate-900 my-2 space-y-2"
+              className="w-full h-1 my-2 space-y-2 bg-slate-900"
             ></div>
           )}
 
@@ -312,7 +312,7 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({
 
             <li key={'inbox'}>
               <div className="py-1 pb-2">
-                <div className="w-full bg-black h-1 mt-2"></div>
+                <div className="w-full h-1 mt-2 bg-black"></div>
               </div>
 
               <ThemeAccordion
@@ -325,7 +325,7 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({
         </>
       ) : (
         <>
-          <p id="loginPleaseText" className="text-center font-bold text-lg">
+          <p id="loginPleaseText" className="text-lg font-bold text-center">
             Vui lòng đăng nhập để sử dụng
           </p>
         </>
@@ -353,4 +353,4 @@ const ThemesDisplayer: React.FC<ThemesDisplayerProps> = ({
   );
 };
 
-export default ThemesDisplayer;
+export default ThemesDisplacer;

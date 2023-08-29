@@ -9,12 +9,13 @@ import {
   forwardRef,
   useState,
 } from 'react';
+import { toast } from 'react-toastify';
 
 type NewThemeModalProps = DialogHTMLAttributes<HTMLDialogElement> & {
   onClose: () => void;
 };
 
-const NewThemModal = forwardRef<HTMLDialogElement, NewThemeModalProps>(
+const NewThemeModal = forwardRef<HTMLDialogElement, NewThemeModalProps>(
   ({ onClose }, ref) => {
     //#region Custom Hooks
 
@@ -39,8 +40,6 @@ const NewThemModal = forwardRef<HTMLDialogElement, NewThemeModalProps>(
       setThemeName('');
     };
 
-    const closeModal = () => {};
-
     //#endregion
 
     //#region Handlers
@@ -48,9 +47,20 @@ const NewThemModal = forwardRef<HTMLDialogElement, NewThemeModalProps>(
     const handleThemeNameChange: ChangeEventHandler<HTMLInputElement> = (e) =>
       setThemeName(e.target.value);
 
-    const handleAdd = async () => {
+    const handleAdd: React.FormEventHandler<HTMLFormElement> = async (e) => {
+      e.preventDefault();
+
       if (!account) {
         alert('Invalid account');
+        return;
+      }
+
+      if (!themeName) {
+        toast('Please enter theme name', {
+          theme: 'colored',
+          type: 'warning',
+          position: 'bottom-left',
+        });
         return;
       }
 
@@ -62,7 +72,12 @@ const NewThemModal = forwardRef<HTMLDialogElement, NewThemeModalProps>(
         await addTheme(account.id, theme);
 
         clearModal();
-        closeModal();
+        toast('New theme added!', {
+          position: 'bottom-left',
+          type: 'success',
+          theme: 'colored',
+        });
+        onClose();
       } catch (error) {
         console.log(error);
       }
@@ -77,9 +92,10 @@ const NewThemModal = forwardRef<HTMLDialogElement, NewThemeModalProps>(
         ref={ref}
         actions={[
           <button
+            type="submit"
+            form="newThemeForm"
             key="add-btn"
-            className="bg-green-500 border-2 border-black text-white hover:bg-red-600 rounded-lg px-2 font-bold flex justify-between items-center"
-            onClick={handleAdd}
+            className="flex items-center justify-between px-2 font-bold text-white bg-green-500 border-2 border-black rounded-lg hover:bg-red-600"
           >
             <span>
               <svg
@@ -101,25 +117,28 @@ const NewThemModal = forwardRef<HTMLDialogElement, NewThemeModalProps>(
           </button>,
         ]}
       >
-        <label htmlFor="themeName" className="font-bold text-sm">
-          Theme name
-        </label>
-        <br />
-        <input
-          id="themeName"
-          value={themeName}
-          onChange={handleThemeNameChange}
-          placeholder="Theme name"
-          type="text"
-          name="name"
-          className={cn(
-            `block outline-none outline-2 rounded-lg px-2 outline-black py-1  
+        <form id="newThemeForm" onSubmit={handleAdd}>
+          <label htmlFor="themeName" className="text-sm font-bold">
+            Theme name
+          </label>
+          <br />
+          <input
+            id="themeName"
+            value={themeName}
+            onChange={handleThemeNameChange}
+            placeholder="Theme name"
+            type="text"
+            name="themeName"
+            autoComplete="off"
+            className={cn(
+              `block outline-none outline-2 rounded-lg px-2 outline-black py-1  
           focus:outline-blue-500 w-full mt-1`
-          )}
-        />
+            )}
+          />
+        </form>
       </Modal>
     );
   }
 );
 
-export default NewThemModal;
+export default NewThemeModal;
