@@ -133,6 +133,7 @@ const NewTaskModal = forwardRef<HTMLDialogElement | null, NewTaskModalProps>(
       );
 
       onClose();
+      setNewTask(defaultTask);
     };
 
     const handleToggleAddTheme = () => {

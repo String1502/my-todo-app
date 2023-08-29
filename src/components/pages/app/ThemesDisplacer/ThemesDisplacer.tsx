@@ -32,7 +32,6 @@ type ThemesDisplacerProps = {
   handleAddTask: () => void;
   addTask: (theme?: string | undefined) => void;
 };
-
 const ThemesDisplacer: React.FC<ThemesDisplacerProps> = ({
   handleAddTask,
   addTask,
