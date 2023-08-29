@@ -6,6 +6,7 @@ import ViewTaskModal from '@/components/pages/app/ViewTaskModal';
 import { INBOX_THEME_NAME } from '@/data/constants/firestorePaths';
 import { auth, db } from '@/firebase';
 import useAccountContext from '@/hooks/useAccountContext';
+import { IntervalStateContext } from '@/hooks/useIntervalState';
 import useThemes from '@/hooks/useThemes';
 import IntervalState from '@/types/IntervalState';
 import { COLLECTION_NAME } from '@/types/enums/collectionName';
@@ -39,7 +40,7 @@ const ThemesDisplacer: React.FC<ThemesDisplacerProps> = ({
   //#region States
   const [user, userLoading, userError] = useAuthState(auth);
   const [selectedIntervalState, setSelectedIntervalState] =
-    useState<IntervalState>('inbox');
+    useState<IntervalState>('all');
 
   const account = useAccountContext();
 
@@ -272,7 +273,7 @@ const ThemesDisplacer: React.FC<ThemesDisplacerProps> = ({
     );
 
   return (
-    <>
+    <IntervalStateContext.Provider value={selectedIntervalState}>
       {user ? (
         <>
           <section id="toolBar" className="flex items-center justify-between">
@@ -349,7 +350,7 @@ const ThemesDisplacer: React.FC<ThemesDisplacerProps> = ({
         onClose={handleCloseNewThemeModal}
         ref={newThemeModalRef}
       />
-    </>
+    </IntervalStateContext.Provider>
   );
 };
 

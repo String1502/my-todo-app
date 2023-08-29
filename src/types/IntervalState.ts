@@ -1,3 +1,3 @@
-type IntervalState = "inbox" | "today" | "tomorrow" | "next-7-days";
+type IntervalState = 'all' | 'today' | 'tomorrow' | 'next-7-days';
 
 export default IntervalState;

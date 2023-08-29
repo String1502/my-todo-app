@@ -1,13 +1,15 @@
 import TaskItem from '@/components/pages/app/TaskItem';
 import { deleteTheme } from '@/data/api/theme';
 import useAccountContext from '@/hooks/useAccountContext';
+import useIntervalState from '@/hooks/useIntervalState';
 import useTasks from '@/hooks/useTasks';
 import { ThemeContext } from '@/hooks/useThemeContext';
 import { Task } from '@/types/models/task';
 import { Theme } from '@/types/models/theme';
 import { colorRandomizer } from '@/utils/style';
 import { cn } from '@/utils/tailwind';
-import React, { useMemo, useState } from 'react';
+import dayjs from 'dayjs';
+import React, { useCallback, useMemo, useState } from 'react';
 import DoneAccordion from './DoneAccordion';
 
 type AccordionProps = {
@@ -29,6 +31,33 @@ const ThemeAccordion: React.FC<AccordionProps> = ({
   const account = useAccountContext();
   const [tasks] = useTasks(account?.id, inbox, theme?.id);
 
+  const intervalState = useIntervalState();
+
+  //#endregion
+
+  //#region UseCallbacks
+
+  const stateFilterCallback = useCallback(
+    (task: Task): boolean => {
+      switch (intervalState) {
+        case 'all':
+          return true;
+        case 'today':
+          return dayjs(task.due_at).isSame(dayjs(), 'day');
+        case 'tomorrow':
+          return dayjs(task.due_at).isSame(dayjs().add(1, 'day'), 'day');
+        case 'next-7-days':
+          return (
+            dayjs(task.due_at).isAfter(dayjs()) &&
+            dayjs(task.due_at).isBefore(dayjs().add(7, 'day'))
+          );
+        default:
+          return false;
+      }
+    },
+    [intervalState]
+  );
+
   //#endregion
 
   //#region UseMemos
@@ -36,12 +65,14 @@ const ThemeAccordion: React.FC<AccordionProps> = ({
   const [undoneTasks, doneTasks]: [Task[], Task[], Task[]] = useMemo(() => {
     if (!tasks) return [[], [], []];
 
+    const stateFilteredTasks = tasks.filter(stateFilterCallback);
+
     return [
-      tasks.filter((task) => task.state === 'undone'),
-      tasks.filter((task) => task.state === 'done'),
-      tasks.filter((task) => task.state === 'never'),
+      stateFilteredTasks.filter((task) => task.state === 'undone'),
+      stateFilteredTasks.filter((task) => task.state === 'done'),
+      stateFilteredTasks.filter((task) => task.state === 'never'),
     ];
-  }, [tasks]);
+  }, [tasks, stateFilterCallback]);
 
   const background: string = useMemo(() => `bg-${colorRandomizer()}`, []);
 

@@ -14,7 +14,8 @@ const IntervalButtonBar: React.FC<IntervalButtonBarProps> = ({
     <div className="flex gap-2">
       <IntervalButton
         selected={value}
-        intervalValue="inbox"
+        intervalValue="all"
+        content={'All'}
         icon={
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -31,10 +32,8 @@ const IntervalButtonBar: React.FC<IntervalButtonBarProps> = ({
             />
           </svg>
         }
-        content={'Inbox'}
-        onClick={() => onChange('inbox')}
+        onClick={() => onChange('all')}
       />
-
       <IntervalButton
         selected={value}
         intervalValue="today"
@@ -105,7 +104,7 @@ const IntervalButtonBar: React.FC<IntervalButtonBarProps> = ({
       />
 
       {/* Not implemented yet text */}
-      <div className="flex items-center   rounded-lg p-1 border-2 border-transparent hover:border-blue-500 transition-all hover:-translate-y-1 cursor-default">
+      <div className="flex items-center p-1 transition-all border-2 border-transparent rounded-lg cursor-default hover:border-blue-500 hover:-translate-y-1">
         <p className="font-bold">(Not implemented yet)</p>
       </div>
     </div>
