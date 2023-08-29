@@ -86,10 +86,14 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onClick, className }) => {
   const handleDelete = async () => {
     if (!account) return;
 
-    try {
-      await deleteTask(account?.id, task);
-    } catch (err) {
-      console.log(err);
+    const confirm = window.confirm('Are you sure?');
+
+    if (confirm) {
+      try {
+        await deleteTask(account?.id, task);
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
@@ -104,14 +108,14 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onClick, className }) => {
       )}
     >
       <div className="w-full" onClick={handleClick}>
-        <div className="flex justify-between items-center py-1">
+        <div className="flex items-center justify-between py-1">
           <p className="font-medium">{task.title}</p>
 
           <div className="flex gap-1">
             {tags.map((tag) => (
               <div
                 key={tag.id}
-                className="rounded-full border-2 border-black p-1"
+                className="p-1 border-2 border-black rounded-full"
               >
                 <p>#{tag.name}</p>
               </div>
@@ -130,9 +134,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onClick, className }) => {
         <>
           {/* Undone button */}
           <button
-            className="border-2 border-black p-1 rounded-lg bg-yellow-500 
-                      hover:bg-yellow-600 active:bg-yellow-500
-                      transition-colors"
+            className="p-1 transition-colors bg-yellow-500 border-2 border-black rounded-lg hover:bg-yellow-600 active:bg-yellow-500"
             onClick={handleUndone}
           >
             <svg
@@ -155,9 +157,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onClick, className }) => {
         <>
           {/* Done button */}
           <button
-            className="border-2 border-black p-1 rounded-lg bg-green-500 
-                      hover:bg-green-600 active:bg-green-500
-                      transition-colors"
+            className="p-1 transition-colors bg-green-500 border-2 border-black rounded-lg hover:bg-green-600 active:bg-green-500"
             onClick={handleDone}
           >
             <svg

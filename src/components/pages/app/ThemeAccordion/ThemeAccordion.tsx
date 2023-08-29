@@ -57,14 +57,21 @@ const ThemeAccordion: React.FC<AccordionProps> = ({
     onTaskClick && onTaskClick(task, theme ? theme.id : 'inbox');
   };
 
+  /**
+   * Handle delete theme
+   */
   const handleDeleteTheme = async () => {
     if (!account) return;
     if (!theme) return;
 
-    try {
-      await deleteTheme(account?.id, theme.id);
-    } catch (err) {
-      console.log(err);
+    const confirmDelete = window.confirm('Are you sure?');
+
+    if (confirmDelete) {
+      try {
+        await deleteTheme(account?.id, theme.id);
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
@@ -83,7 +90,7 @@ const ThemeAccordion: React.FC<AccordionProps> = ({
             aria-expanded={!open}
           >
             <div
-              className="flex items-center gap-2 w-full"
+              className="flex items-center w-full gap-2"
               onClick={handleToggle}
             >
               <p className="text-lg font-bold ">
@@ -91,18 +98,16 @@ const ThemeAccordion: React.FC<AccordionProps> = ({
               </p>
 
               <p>
-                <span className="text-md font-medium">Tasks: </span>
+                <span className="font-medium text-md">Tasks: </span>
                 {tasks ? tasks.length : 0}
               </p>
             </div>
 
             {/* Action zone */}
-            <div className="flex gap-1 items-center">
-              <div className="mr-2 flex gap-1">
+            <div className="flex items-center gap-1">
+              <div className="flex gap-1 mr-2">
                 <button
-                  className="flex gap-1 border-2 border-black rounded-lg
-                 p-1 font-bold text-white 
-                 bg-green-500 hover:bg-green-600 active:bg-green-500"
+                  className="flex gap-1 p-1 font-bold text-white bg-green-500 border-2 border-black rounded-lg hover:bg-green-600 active:bg-green-500"
                   onClick={() => addTask(inbox ? 'inbox' : theme?.id)}
                 >
                   <p className="whitespace-nowrap">Add Task</p>
@@ -125,9 +130,7 @@ const ThemeAccordion: React.FC<AccordionProps> = ({
                 </button>
                 {inbox ? null : (
                   <button
-                    className="flex gap-1 border-2 border-black 
-                  rounded-lg p-1 font-bold text-white 
-                  bg-red-500 hover:bg-red-600 active:bg-red-500"
+                    className="flex gap-1 p-1 font-bold text-white bg-red-500 border-2 border-black rounded-lg hover:bg-red-600 active:bg-red-500"
                     onClick={handleDeleteTheme}
                   >
                     <p className="whitespace-nowrap">Delete</p>
@@ -192,7 +195,7 @@ const ThemeAccordion: React.FC<AccordionProps> = ({
                   ))}
               </ul>
             ) : (
-              <p className="text-center font-bold text-sm">
+              <p className="text-sm font-bold text-center">
                 This theme has no tasks
               </p>
             )}
