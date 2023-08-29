@@ -9,6 +9,7 @@ import { Theme } from '@/types/models/theme';
 import { colorRandomizer } from '@/utils/style';
 import { cn } from '@/utils/tailwind';
 import dayjs from 'dayjs';
+import { collectionGroup } from 'firebase/firestore';
 import React, { useCallback, useMemo, useState } from 'react';
 import DoneAccordion from './DoneAccordion';
 
@@ -85,6 +86,8 @@ const ThemeAccordion: React.FC<AccordionProps> = ({
   };
 
   const handleTaskClick = (task: Task) => {
+    console.log('run');
+
     onTaskClick && onTaskClick(task, theme ? theme.id : 'inbox');
   };
 
@@ -130,7 +133,7 @@ const ThemeAccordion: React.FC<AccordionProps> = ({
 
               <p>
                 <span className="font-medium text-md">Tasks: </span>
-                {tasks ? tasks.length : 0}
+                {undoneTasks ? undoneTasks.length : 0}
               </p>
             </div>
 

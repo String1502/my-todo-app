@@ -149,6 +149,20 @@ const ViewTaskModalProps = forwardRef<HTMLDialogElement, ViewTaskModalProps>(
       setNewThemeName(value);
     };
 
+    const handleDueAtChange = () => {
+      if (task.due_at) {
+        onTaskChange('due_at', undefined);
+      } else {
+        onTaskChange('due_at', new Date());
+      }
+    }
+
+    const handleDueAtValueChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+      const data = new Date(e.target.value);
+
+      onTaskChange('due_at', data);
+    }
+
     //#endregion
 
     return (
@@ -309,10 +323,10 @@ const ViewTaskModalProps = forwardRef<HTMLDialogElement, ViewTaskModalProps>(
 
                   {/* From - To Date */}
                   {task.repeat &&
-                  task.repeat_data &&
-                  task.repeat_data.type === 'custom' &&
-                  task.repeat_data.from &&
-                  task.repeat_data.to ? (
+                    task.repeat_data &&
+                    task.repeat_data.type === 'custom' &&
+                    task.repeat_data.from &&
+                    task.repeat_data.to ? (
                     <div className="flex justify-between items-center space-x-1">
                       {/* From */}
                       <div className="flex-col space-y-1">
@@ -382,6 +396,38 @@ const ViewTaskModalProps = forwardRef<HTMLDialogElement, ViewTaskModalProps>(
                   ) : null}
                 </div>
               </>
+            ) : null}
+
+            {/* Divider */}
+            <div className="py-2">
+              <div className="h-0.5 w-full bg-black/50"></div>
+            </div>
+
+
+            <FormLabel htmlFor={'dueAt'} label={'Due'} position="end">
+              <input
+                id="dueAt"
+                type="checkbox"
+                name="dueAt"
+                checked={!!task.due_at}
+                onChange={handleDueAtChange}
+                className="mr-2"
+              />
+            </FormLabel>
+
+            {task.due_at ? (
+              <div className="flex-col space-y-1">
+                <input
+                  id="from"
+                  type="datetime-local"
+                  placeholder="Due date"
+                  className={cn(
+                    'block outline-none outline-2 rounded-lg px-2 outline-black py-1 focus:outline-blue-500'
+                  )}
+                  value={dayjs(task.due_at).format('YYYY-MM-DDTHH:mm')}
+                  onChange={handleDueAtValueChange}
+                />
+              </div>
             ) : null}
 
             {/* Divider */}

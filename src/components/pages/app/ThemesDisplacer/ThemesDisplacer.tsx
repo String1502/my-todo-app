@@ -88,6 +88,7 @@ const ThemesDisplacer: React.FC<ThemesDisplacerProps> = ({
     setSelectedTask(clone(task));
     setCachedSelectedTask(clone(task));
     setSelectedThemeTask(theme);
+    handleOpenViewTaskModal();
   };
 
   const handleViewTaskModalClose = () => {
@@ -207,10 +208,10 @@ const ThemesDisplacer: React.FC<ThemesDisplacerProps> = ({
       setSelectedTask((prev) => {
         return prev
           ? {
-              ...prev,
-              repeat_data: repeatData,
-              repeat: true,
-            }
+            ...prev,
+            repeat_data: repeatData,
+            repeat: true,
+          }
           : null;
       });
     } else {
@@ -255,6 +256,9 @@ const ThemesDisplacer: React.FC<ThemesDisplacerProps> = ({
 
   const handleOpenNewThemeModal = () => newThemeModalRef.current?.showModal();
   const handleCloseNewThemeModal = () => newThemeModalRef.current?.close();
+
+  const handleOpenViewTaskModal = () => viewTaskModalRef.current?.showModal();
+  const handlleCloseViewTaskModal = () => viewTaskModalRef.current?.close();
 
   //#endregion
 
@@ -301,14 +305,14 @@ const ThemesDisplacer: React.FC<ThemesDisplacerProps> = ({
           <ul className="flex-col space-y-2">
             {themes && themes.length > 0
               ? themes.map((theme) => (
-                  <li key={theme.id} className="flex-col space-y-1">
-                    <ThemeAccordion
-                      theme={theme}
-                      onTaskClick={handleTaskClick}
-                      addTask={addTask}
-                    />
-                  </li>
-                ))
+                <li key={theme.id} className="flex-col space-y-1">
+                  <ThemeAccordion
+                    theme={theme}
+                    onTaskClick={handleTaskClick}
+                    addTask={addTask}
+                  />
+                </li>
+              ))
               : null}
 
             <li key={'inbox'}>

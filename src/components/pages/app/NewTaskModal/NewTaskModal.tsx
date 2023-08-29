@@ -166,6 +166,21 @@ const NewTaskModal = forwardRef<HTMLDialogElement | null, NewTaskModalProps>(
       handleToggleAddTheme();
     };
 
+    const handleDueAtChange = () => {
+      if (newTask.due_at) {
+        setNewTask({ ...newTask, due_at: undefined });
+      } else {
+        setNewTask({ ...newTask, due_at: new Date() });
+      }
+    }
+
+    const handleDueAtValueChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+      const data = new Date(e.target.value);
+
+      setNewTask(prev => ({ ...prev, due_at: data }));
+    }
+
+
     //#endregion
 
     return (
@@ -176,7 +191,7 @@ const NewTaskModal = forwardRef<HTMLDialogElement | null, NewTaskModalProps>(
         actions={[
           <button
             key="add-btn"
-            className="bg-green-500 border-2 border-black text-white hover:bg-red-600 rounded-lg px-2 font-bold flex justify-between items-center"
+            className="flex items-center justify-between px-2 font-bold text-white bg-green-500 border-2 border-black rounded-lg hover:bg-red-600"
             onClick={handleAdd}
           >
             <span>
@@ -265,7 +280,7 @@ const NewTaskModal = forwardRef<HTMLDialogElement | null, NewTaskModalProps>(
               >
                 {/* Repeat type */}
                 <div className="flex-col space-y-1">
-                  <label htmlFor="repeatType" className="font-bold text-sm">
+                  <label htmlFor="repeatType" className="text-sm font-bold">
                     Type
                   </label>
                   <select
@@ -293,7 +308,7 @@ const NewTaskModal = forwardRef<HTMLDialogElement | null, NewTaskModalProps>(
                   newTask.repeat_data.type !== 'custom' && (
                     <>
                       <div className="flex-col space-y-1">
-                        <label htmlFor="interval" className="font-bold text-sm">
+                        <label htmlFor="interval" className="text-sm font-bold">
                           Type
                         </label>
                         <input
@@ -317,15 +332,15 @@ const NewTaskModal = forwardRef<HTMLDialogElement | null, NewTaskModalProps>(
 
                 {/* From - To Date */}
                 {newTask.repeat &&
-                newTask.repeat_data &&
-                newTask.repeat_data.type === 'custom' &&
-                newTask.repeat_data.from &&
-                newTask.repeat_data.to ? (
-                  <div className="flex justify-between items-center space-x-1">
+                  newTask.repeat_data &&
+                  newTask.repeat_data.type === 'custom' &&
+                  newTask.repeat_data.from &&
+                  newTask.repeat_data.to ? (
+                  <div className="flex items-center justify-between space-x-1">
                     {/* From */}
 
                     <div className="flex-col space-y-1">
-                      <label htmlFor="from" className="font-bold text-sm">
+                      <label htmlFor="from" className="text-sm font-bold">
                         From
                       </label>
                       <input
@@ -347,7 +362,7 @@ const NewTaskModal = forwardRef<HTMLDialogElement | null, NewTaskModalProps>(
                       />
                     </div>
 
-                    <div className="flex justify-center items-center translate-y-3">
+                    <div className="flex items-center justify-center translate-y-3">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -366,7 +381,7 @@ const NewTaskModal = forwardRef<HTMLDialogElement | null, NewTaskModalProps>(
 
                     {/* To */}
                     <div className="flex-col space-y-1">
-                      <label htmlFor="to" className="font-bold text-sm">
+                      <label htmlFor="to" className="text-sm font-bold">
                         To
                       </label>
                       <input
@@ -398,9 +413,40 @@ const NewTaskModal = forwardRef<HTMLDialogElement | null, NewTaskModalProps>(
             <div className="h-0.5 w-full bg-black/50"></div>
           </div>
 
+          <FormLabel htmlFor={'dueAt'} label={'Due'} position="end">
+            <input
+              id="dueAt"
+              type="checkbox"
+              name="dueAt"
+              checked={!!newTask.due_at}
+              onChange={handleDueAtChange}
+              className="mr-2"
+            />
+          </FormLabel>
+
+          {newTask.due_at ? (
+            <div className="flex-col space-y-1">
+              <input
+                id="from"
+                type="datetime-local"
+                placeholder="Due date"
+                className={cn(
+                  'block outline-none outline-2 rounded-lg px-2 outline-black py-1 focus:outline-blue-500'
+                )}
+                value={dayjs(newTask.due_at).format('YYYY-MM-DDTHH:mm')}
+                onChange={handleDueAtValueChange}
+              />
+            </div>
+          ) : null}
+
+          {/* Divider */}
+          <div className="py-2">
+            <div className="h-0.5 w-full bg-black/50"></div>
+          </div>
+
           {/* Theme option */}
           <div className="flex-col space-y-1">
-            <label htmlFor="themeSelect" className="font-bold text-sm">
+            <label htmlFor="themeSelect" className="text-sm font-bold">
               Theme
             </label>
 
@@ -476,7 +522,7 @@ const NewTaskModal = forwardRef<HTMLDialogElement | null, NewTaskModalProps>(
 
             {isAddTheme && (
               <div className="flex-col space-y-1">
-                <label htmlFor="newThemeName" className="font-bold text-sm">
+                <label htmlFor="newThemeName" className="text-sm font-bold">
                   Theme name
                 </label>
                 <div className="flex items-center justify-between space-x-2">
