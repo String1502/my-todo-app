@@ -235,7 +235,7 @@ const ThemeAccordion: React.FC<AccordionProps> = ({
           </div>
 
           {/* Done tasks */}
-          <DoneAccordion tasks={doneTasks} />
+          <DoneAccordion tasks={doneTasks} taskClick={handleTaskClick} />
         </article>
       ) : (
         <div className="p-1 border-2 border-black">
