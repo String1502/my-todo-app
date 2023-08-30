@@ -9,7 +9,6 @@ import { Theme } from '@/types/models/theme';
 import { colorRandomizer } from '@/utils/style';
 import { cn } from '@/utils/tailwind';
 import dayjs from 'dayjs';
-import { collectionGroup } from 'firebase/firestore';
 import React, { useCallback, useMemo, useState } from 'react';
 import DoneAccordion from './DoneAccordion';
 

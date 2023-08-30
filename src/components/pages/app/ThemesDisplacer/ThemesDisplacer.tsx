@@ -257,7 +257,7 @@ const ThemesDisplacer: React.FC<ThemesDisplacerProps> = ({
   const handleCloseNewThemeModal = () => newThemeModalRef.current?.close();
 
   const handleOpenViewTaskModal = () => viewTaskModalRef.current?.showModal();
-  const handlleCloseViewTaskModal = () => viewTaskModalRef.current?.close();
+  // const handleCloseViewTaskModal = () => viewTaskModalRef.current?.close();
 
   //#endregion
 
